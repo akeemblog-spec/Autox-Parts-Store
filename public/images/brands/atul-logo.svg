@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <rect width="200" height="200" rx="12" fill="#111111"/>
+  <rect x="1" y="1" width="198" height="198" rx="11" fill="none" stroke="#222222" stroke-width="2"/>
+  <circle cx="100" cy="80" r="36" fill="none" stroke="#ED1C24" stroke-width="4"/>
+  <text x="100" y="150" font-family="Arial, sans-serif" font-size="18" font-weight="800" fill="#FFFFFF" text-anchor="middle" letter-spacing="1">ATUL</text>
+</svg>

@@ -1,0 +1,2 @@
+import {NextResponse} from "next/server";import {getAllPaymentMethods} from "@/lib/db-queries/payment-methods";import {getCurrentAccount,requireAdmin} from "@/lib/auth-guards";
+export async function GET(){const guard=await requireAdmin();if(guard)return guard;const account=await getCurrentAccount();const methods=await getAllPaymentMethods();return NextResponse.json({methods:methods.map(m=>account?.role==="super_admin"?m:{...m,config:null}),configVisible:account?.role==="super_admin"});}

@@ -1,0 +1,10 @@
+import { NextRequest,NextResponse } from "next/server";
+import { cookies } from "next/headers";
+import { eq } from "drizzle-orm";
+import { db } from "@/db";import { users } from "@/db/schema";
+import { getCurrentAccount } from "@/lib/auth-guards";
+import { decryptSecret,hashSecurityValue,normalizeRecoveryCode } from "@/lib/security/crypto";
+import { verifyTotp } from "@/lib/security/totp";
+import { checkRateLimit,requestIp } from "@/lib/security/rate-limit";
+import { createMfaProof,MFA_COOKIE } from "@/lib/security/mfa-proof";
+export async function POST(req:NextRequest){const u=await getCurrentAccount();if(!u||!["admin","super_admin"].includes(u.role))return NextResponse.json({error:"Admin access required"},{status:403});if(!u.mfaEnabled)return NextResponse.json({error:"MFA setup required",code:"MFA_SETUP_REQUIRED"},{status:428});const lim=await checkRateLimit("mfa-verify",`${u.id}:${requestIp(req)}`,10,15*60_000);if(!lim.allowed)return NextResponse.json({error:"Too many attempts. Try again later."},{status:429,headers:{"Retry-After":String(lim.retryAfterSeconds)}});const code=String((await req.json().catch(()=>null))?.code||"");const [row]=await db.select({secret:users.mfaSecretEncrypted,recovery:users.mfaRecoveryCodes}).from(users).where(eq(users.id,u.id)).limit(1);if(!row?.secret)return NextResponse.json({error:"MFA setup is incomplete."},{status:428});let valid=false;try{valid=verifyTotp(decryptSecret(row.secret),code)}catch{}if(!valid&&row.recovery){const hashes:string[]=JSON.parse(row.recovery);const hash=hashSecurityValue(normalizeRecoveryCode(code));const i=hashes.indexOf(hash);if(i>=0){hashes.splice(i,1);await db.update(users).set({mfaRecoveryCodes:JSON.stringify(hashes)}).where(eq(users.id,u.id));valid=true;}}if(!valid)return NextResponse.json({error:"Invalid authenticator or recovery code."},{status:400});const store=await cookies();store.set(MFA_COOKIE,createMfaProof({uid:u.id,nonce:u.sessionNonce,sv:u.sessionVersion}),{httpOnly:true,sameSite:"lax",secure:process.env.NODE_ENV==="production",path:"/",maxAge:12*60*60});return NextResponse.json({ok:true});}

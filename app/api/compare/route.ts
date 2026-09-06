@@ -1,0 +1,10 @@
+import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
+import { and, eq, isNull } from "drizzle-orm";
+import { auth } from "@/auth";
+import { db } from "@/db";
+import { compareItems, products } from "@/db/schema";
+
+export async function GET(){const session=await auth();if(!session?.user?.id||session.user.invalidated)return NextResponse.json({error:"Not authenticated"},{status:401});const items=await db.query.compareItems.findMany({where:eq(compareItems.userId,session.user.id),with:{product:{with:{brand:true,images:{orderBy:(img,{asc})=>[asc(img.sortOrder)],limit:1},specifications:{orderBy:(s,{asc})=>[asc(s.sortOrder)]}}}}});return NextResponse.json({items:items.filter((item)=>!item.product.archivedAt)});}
+const schema=z.object({productId:z.string().uuid()});
+export async function POST(req:NextRequest){const session=await auth();if(!session?.user?.id||session.user.invalidated)return NextResponse.json({error:"Not authenticated"},{status:401});const parsed=schema.safeParse(await req.json().catch(()=>null));if(!parsed.success)return NextResponse.json({error:"Invalid product"},{status:400});const [available]=await db.select({id:products.id}).from(products).where(and(eq(products.id,parsed.data.productId),isNull(products.archivedAt))).limit(1);if(!available)return NextResponse.json({error:"This product is no longer available."},{status:409});const current=await db.select({id:compareItems.id,productId:compareItems.productId}).from(compareItems).where(eq(compareItems.userId,session.user.id));if(current.some(x=>x.productId===parsed.data.productId))return NextResponse.json({ok:true,alreadyAdded:true});if(current.length>=4)return NextResponse.json({error:"You can compare up to 4 products at a time."},{status:409});const [created]=await db.insert(compareItems).values({userId:session.user.id,productId:parsed.data.productId}).onConflictDoNothing().returning();if(!created)return NextResponse.json({ok:true,alreadyAdded:true});return NextResponse.json({item:created},{status:201});}
