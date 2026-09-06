@@ -1,2 +1,130 @@
-"use client";import {useState} from "react";import {useSearchParams} from "next/navigation";import Link from "next/link";
-export default function AdminInvitePage(){const p=useSearchParams();const email=p.get('email')||'',token=p.get('token')||'';const[password,setPassword]=useState(''),[confirm,setConfirm]=useState(''),[msg,setMsg]=useState(''),[ok,setOk]=useState(false),[busy,setBusy]=useState(false);const submit=async(e:React.FormEvent)=>{e.preventDefault();if(password!==confirm){setMsg('Passwords do not match.');return}setBusy(true);const r=await fetch('/api/auth/admin-invite/accept',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,token,password})});const d=await r.json();setBusy(false);setOk(r.ok);setMsg(d.message||d.error||'Unable to accept invitation.');};return <main className="min-h-screen bg-autox-bg grid place-items-center px-4"><form onSubmit={submit} className="w-full max-w-md rounded-md border border-autox-border bg-autox-panel p-7"><div className="mb-6 text-2xl font-black text-white">AUTO<span className="text-autox-red">X</span></div><h1 className="text-xl font-bold text-white">Set up your Admin account</h1><p className="mt-2 text-sm text-autox-gray">Create your own password. The Super Admin never sees it. After sign-in, you’ll set up authenticator MFA.</p>{!ok&&<><input required minLength={12} maxLength={128} type="password" value={password} onChange={e=>setPassword(e.target.value)} className="mt-5 w-full rounded-sm border border-autox-border bg-autox-panel3 px-3 py-3 text-sm text-white outline-none focus:border-autox-red" placeholder="Password (12+ characters)"/><input required minLength={12} type="password" value={confirm} onChange={e=>setConfirm(e.target.value)} className="mt-3 w-full rounded-sm border border-autox-border bg-autox-panel3 px-3 py-3 text-sm text-white outline-none focus:border-autox-red" placeholder="Confirm password"/><button disabled={busy} className="mt-3 w-full bg-autox-red px-4 py-3 text-sm font-bold text-white disabled:opacity-50">{busy?'Creating account...':'Create Admin Account'}</button></>}{msg&&<p className="mt-4 text-xs text-autox-gray">{msg}</p>}{ok&&<Link href="/login?callbackUrl=/admin" className="mt-4 block bg-autox-red px-4 py-3 text-center text-sm font-bold text-white">Sign In & Set Up MFA</Link>}</form></main>}
+"use client";
+
+import { Suspense, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import Link from "next/link";
+
+function AdminInviteContent() {
+  const p = useSearchParams();
+  const email = p.get("email") || "";
+  const token = p.get("token") || "";
+
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
+  const [msg, setMsg] = useState("");
+  const [ok, setOk] = useState(false);
+  const [busy, setBusy] = useState(false);
+
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (password !== confirm) {
+      setMsg("Passwords do not match.");
+      return;
+    }
+
+    setBusy(true);
+
+    try {
+      const r = await fetch("/api/auth/admin-invite/accept", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, token, password }),
+      });
+
+      const d = await r.json();
+
+      setOk(r.ok);
+      setMsg(d.message || d.error || "Unable to accept invitation.");
+    } catch {
+      setOk(false);
+      setMsg("Unable to accept invitation. Please try again.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <main className="min-h-screen bg-autox-bg grid place-items-center px-4">
+      <form
+        onSubmit={submit}
+        className="w-full max-w-md rounded-md border border-autox-border bg-autox-panel p-7"
+      >
+        <div className="mb-6 text-2xl font-black text-white">
+          AUTO<span className="text-autox-red">X</span>
+        </div>
+
+        <h1 className="text-xl font-bold text-white">
+          Set up your Admin account
+        </h1>
+
+        <p className="mt-2 text-sm text-autox-gray">
+          Create your own password. The Super Admin never sees it. After
+          sign-in, you’ll set up authenticator MFA.
+        </p>
+
+        {!ok && (
+          <>
+            <input
+              required
+              minLength={12}
+              maxLength={128}
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="mt-5 w-full rounded-sm border border-autox-border bg-autox-panel3 px-3 py-3 text-sm text-white outline-none focus:border-autox-red"
+              placeholder="Password (12+ characters)"
+            />
+
+            <input
+              required
+              minLength={12}
+              maxLength={128}
+              type="password"
+              value={confirm}
+              onChange={(e) => setConfirm(e.target.value)}
+              className="mt-3 w-full rounded-sm border border-autox-border bg-autox-panel3 px-3 py-3 text-sm text-white outline-none focus:border-autox-red"
+              placeholder="Confirm password"
+            />
+
+            <button
+              disabled={busy}
+              className="mt-3 w-full bg-autox-red px-4 py-3 text-sm font-bold text-white disabled:opacity-50"
+            >
+              {busy ? "Creating account..." : "Create Admin Account"}
+            </button>
+          </>
+        )}
+
+        {msg && <p className="mt-4 text-xs text-autox-gray">{msg}</p>}
+
+        {ok && (
+          <Link
+            href="/login?callbackUrl=/admin"
+            className="mt-4 block bg-autox-red px-4 py-3 text-center text-sm font-bold text-white"
+          >
+            Sign In &amp; Set Up MFA
+          </Link>
+        )}
+      </form>
+    </main>
+  );
+}
+
+function AdminInviteLoading() {
+  return (
+    <main className="min-h-screen bg-autox-bg grid place-items-center px-4">
+      <div className="text-sm text-autox-gray">
+        Loading invitation...
+      </div>
+    </main>
+  );
+}
+
+export default function AdminInvitePage() {
+  return (
+    <Suspense fallback={<AdminInviteLoading />}>
+      <AdminInviteContent />
+    </Suspense>
+  );
+}
