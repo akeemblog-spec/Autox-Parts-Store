@@ -2,6 +2,7 @@ import { TopBar } from "@/components/TopBar";
 import { Header } from "@/components/Header";
 import { MainNavigation } from "@/components/MainNavigation";
 import { Footer } from "@/components/Footer";
+import { MobileFloatingNav } from "@/components/MobileFloatingNav";
 
 export default function StorefrontLayout({
   children,
@@ -13,8 +14,11 @@ export default function StorefrontLayout({
       <TopBar />
       <Header />
       <MainNavigation />
-      {children}
-      <Footer />
+      <div className="pb-[calc(6.5rem+env(safe-area-inset-bottom))] lg:pb-0">
+        {children}
+        <Footer />
+      </div>
+      <MobileFloatingNav />
     </>
   );
 }

@@ -118,6 +118,51 @@ expect(existsSync(join(root, "db/migrations/0006_full_qa_cleanup.sql")), "0006 m
 expect(existsSync(join(root, "db/migrations/0007_operations_enhancements.sql")), "0007 migration file exists");
 expect(existsSync(join(root, "db/migrations/0008_product_archive_ui_hardening.sql")), "0008 migration file exists");
 
+
+// Mobile storefront UX regression checks.
+const mobileNav = text("components/MobileFloatingNav.tsx");
+for (const label of ["Home", "Categories", "Search", "Account", "Cart"]) {
+  expect(mobileNav.includes(`label: "${label}"`), `mobile floating nav includes ${label}`);
+}
+expect(mobileNav.includes('bottom: "calc(10px + env(safe-area-inset-bottom))"'), "mobile floating nav respects device safe area");
+expect(mobileNav.includes("loadCatalogOptions()"), "mobile category sheet uses live catalog options");
+expect(mobileNav.includes("<SearchBar mobile autoFocus"), "mobile search sheet reuses live product search");
+expect(mobileNav.includes('isAuthenticated ? "/account" : "/login"'), "mobile Account destination follows authentication state");
+expect(mobileNav.includes('window.addEventListener("autox-cart-updated"'), "mobile Cart badge listens for live cart updates");
+expect(mobileNav.includes("visibleCartCount = isAuthenticated ? cartCount : 0"), "logged-out Cart badge is derived without effect state resets");
+expect(!mobileNav.includes("setCartCount(0);"), "mobile Cart effect avoids synchronous logout state reset");
+expect(existsSync(join(root, "components/account/MobileAccountNav.tsx")), "mobile My Account navigation exists");
+expect(text("app/(storefront)/account/layout.tsx").includes("<MobileAccountNav"), "account routes render mobile My Account navigation");
+expect(!existsSync(join(root, "app/(storefront)/account/loading.tsx")), "account tab navigation no longer swaps to a full-page skeleton");
+expect(existsSync(join(root, "components/HomeLaunchExperience.tsx")), "homepage uses dedicated superbike launch experience instead of generic spinner");
+expect(existsSync(join(root, "app/favicon.ico")), "favicon exists");
+expect(existsSync(join(root, "app/icon.svg")), "SVG app icon exists");
+expect(existsSync(join(root, "app/apple-icon.png")), "Apple touch icon exists");
+expect(existsSync(join(root, "app/manifest.ts")), "web app manifest exists");
+
+
+// 2026-09 mobile + hero polish regression checks.
+const mobileDrawer = text("components/MobileNav.tsx");
+expect(!mobileDrawer.includes("max-h-56 overflow-y-auto"), "mobile drawer accordions expand without nested scrollbars");
+expect(mobileDrawer.includes("Track Order"), "mobile drawer footer uses Track Order instead of duplicate Cart");
+expect(mobileDrawer.includes("compareCount"), "mobile drawer exposes live Compare count");
+const header = text("components/Header.tsx");
+expect(header.includes('href="/wishlist"') && header.includes('md:hidden'), "mobile header fills right action with Wishlist");
+expect(header.includes("autox-compare-updated"), "header refreshes Compare count from live events");
+expect(text("app/globals.css").includes(".autox-count-badge"), "storefront uses unified AutoX red count badge");
+expect(!mobileNav.includes('bg-white px-1 text-[9px] font-black leading-none text-black'), "mobile Cart badge no longer uses white circle styling");
+expect(mobileNav.includes('active: panel === "search"'), "mobile Search active state follows the Search panel");
+expect(text("app/(storefront)/compare/page.tsx").includes("lg:hidden") && text("app/(storefront)/compare/page.tsx").includes("2 / 4") === false, "Compare has a dedicated responsive mobile layout");
+expect(text("app/(storefront)/wishlist/page.tsx").includes("useAppUI") && text("app/(storefront)/wishlist/page.tsx").includes("Removed from your wishlist"), "Wishlist uses branded feedback and rollback-aware removal");
+expect(text("components/ProductCard.tsx").includes("loadSavedProductState") && text("components/ProductCard.tsx").includes("autox-compare-updated"), "product cards hydrate Wishlist and Compare state");
+expect(text("components/Hero.tsx").includes("Genuine performance parts") && text("components/Hero.tsx").includes("heroProgress") && !text("components/Hero.tsx").includes("Parts matched to your ride"), "Hero keeps premium layout with visible slider controls and no image-overlap label");
+expect(!text("components/VehicleFinder.tsx").includes("lg:-mt-7") && text("components/VehicleFinder.tsx").includes("lg:pt-7"), "vehicle finder no longer overlaps hero slider controls");
+expect(text("app/(storefront)/orders/track/page.tsx").includes("Express Delivery Fee") && text("app/(storefront)/orders/track/page.tsx").includes("item.productName") && text("app/(storefront)/orders/track/page.tsx").includes("Delivery Information"), "track order summary includes line items and delivery breakdown");
+expect(text("app/(storefront)/account/orders/page.tsx").includes("Price Breakdown") && text("app/(storefront)/account/orders/page.tsx").includes("Express Delivery Fee"), "My Orders uses redesigned subtotal and delivery breakdown");
+expect(text("components/VehicleFinder.tsx").includes("Find Parts For") && text("components/VehicleFinder.tsx").includes("rounded-2xl"), "vehicle finder matches redesigned Hero system");
+expect(text("components/FilterDrawer.tsx").includes("flex max-h-[88dvh] flex-col") && text("components/FilterDrawer.tsx").includes("min-h-0 flex-1 overflow-y-auto"), "mobile Filter drawer keeps header fixed while content scrolls");
+expect(text("components/ui/AppUIProvider.tsx").includes("6.8rem+env(safe-area-inset-bottom)"), "mobile toasts clear the floating navigation");
+
 if (failed) {
   console.error(`\n${failed} integrity check(s) failed.`);
   process.exit(1);

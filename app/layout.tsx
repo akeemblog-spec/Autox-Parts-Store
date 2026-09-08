@@ -11,6 +11,11 @@ export const metadata: Metadata = {
   description:
     "Shop genuine motorcycle and three wheeler parts online in Sri Lanka. Islandwide delivery, easy installment plans, and 100% genuine parts for Honda, Yamaha, Bajaj, TVS, Suzuki, Hero and more.",
   keywords: ["motorcycle parts", "bike parts Sri Lanka", "genuine parts", "Honda parts", "three wheeler parts"],
+  manifest: "/manifest.webmanifest",
+  icons: {
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }, { url: "/favicon.ico" }],
+    apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }],
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

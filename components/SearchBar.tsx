@@ -12,7 +12,7 @@ import { getCachedCatalogOptions, loadCatalogOptions } from "@/lib/client/storef
 type C = { label: string; value: string };
 type SearchProduct = { id: string; slug: string; name: string; price: number; brand?: { name?: string }; images?: { url: string; alt: string }[] };
 
-export function SearchBar({ mobile = false, onNavigate }: { mobile?: boolean; onNavigate?: () => void }) {
+export function SearchBar({ mobile = false, onNavigate, autoFocus = false }: { mobile?: boolean; onNavigate?: () => void; autoFocus?: boolean }) {
   const router = useRouter();
   const [category, setCategory] = useState("all");
   const cached = getCachedCatalogOptions();
@@ -81,6 +81,7 @@ export function SearchBar({ mobile = false, onNavigate }: { mobile?: boolean; on
           onFocus={() => query.trim().length >= 3 && setOpen(true)}
           placeholder="Search parts, brands, models..."
           autoComplete="off"
+          autoFocus={autoFocus}
           className="min-w-0 flex-1 bg-autox-panel2 px-3 md:px-4 text-sm text-white outline-none placeholder:text-autox-gray"
         />
         {!mobile && (

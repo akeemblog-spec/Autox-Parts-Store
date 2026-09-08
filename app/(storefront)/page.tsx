@@ -9,6 +9,7 @@ import { TrustCard } from "@/components/TrustCard";
 import { getAllBrands, getAllCategories } from "@/lib/db-queries/products";
 import { trustFeatures } from "@/lib/data/site";
 import { getHeroSlides, getPromoBanners, getStorefrontSettings } from "@/lib/db-queries/storefront";
+import { HomeLaunchExperience } from "@/components/HomeLaunchExperience";
 
 export const dynamic = "force-dynamic";
 
@@ -24,8 +25,7 @@ export default async function HomePage() {
   ];
   const promo = banners.length ? banners : promoFallback;
 
-  return <>
-    
+  return <HomeLaunchExperience>
     <main>
       <Hero slides={slides} autoplay={settings.hero_autoplay !== "false"} interval={Number(settings.hero_interval || 5000)} pauseOnHover={settings.hero_pause_hover !== "false"} />
       <VehicleFinder />
@@ -36,5 +36,5 @@ export default async function HomePage() {
       <section className="mx-auto max-w-[1600px] px-4 pb-14 lg:px-6"><SectionHeading title="Why Choose" accent="AutoX Parts Store?" /><div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">{trustFeatures.map((feature) => <TrustCard key={feature.id} feature={feature} />)}</div></section>
     </main>
     
-  </>;
+  </HomeLaunchExperience>;
 }

@@ -84,3 +84,59 @@ body {
 .autox-model-scroll::-webkit-scrollbar-track { background: #111111; border-radius: 999px; }
 .autox-model-scroll::-webkit-scrollbar-thumb { background: #ED1C24; border-radius: 999px; }
 .autox-model-scroll::-webkit-scrollbar-thumb:hover { background: #c8141b; }
+
+/* Mobile storefront dock: keep tap targets clear of the iOS home indicator. */
+@media (max-width: 1023px) {
+  .autox-mobile-safe-bottom {
+    padding-bottom: calc(6.5rem + env(safe-area-inset-bottom));
+  }
+}
+
+/* AutoX storefront count badges: consistent across cart, wishlist and compare. */
+.autox-count-badge {
+  display: inline-flex;
+  min-width: 18px;
+  height: 18px;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #0b0b0d;
+  border-radius: 999px;
+  background: #ED1C24;
+  padding: 0 4px;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 900;
+  line-height: 1;
+  box-shadow: 0 3px 10px rgba(237,28,36,.34);
+}
+
+@keyframes autox-count-pop {
+  0% { transform: scale(.78); }
+  55% { transform: scale(1.16); }
+  100% { transform: scale(1); }
+}
+.autox-count-pop { animation: autox-count-pop .35s ease-out both; }
+
+/* Keep touch scrolling native while removing distracting nested scrollbar chrome. */
+.autox-overlay-scroll {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.autox-overlay-scroll::-webkit-scrollbar { display: none; }
+
+/* Homepage launch experience: superbike motion instead of a generic spinner. */
+@keyframes autox-loader-bike-float {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(-.4deg); }
+  50% { transform: translate3d(0, -5px, 0) rotate(.4deg); }
+}
+@keyframes autox-loader-wheel-spin { to { transform: rotate(360deg); } }
+@keyframes autox-loader-lines {
+  0% { transform: translateX(-16px); opacity: .1; }
+  45% { opacity: 1; }
+  100% { transform: translateX(22px); opacity: .12; }
+}
+@keyframes autox-loader-progress { from { width: 0; } to { width: 100%; } }
+.autox-loader-bike { animation: autox-loader-bike-float .7s ease-in-out infinite; filter: drop-shadow(0 24px 42px rgba(237,28,36,.2)); }
+.autox-loader-wheel { transform-box: fill-box; transform-origin: center; animation: autox-loader-wheel-spin .55s linear infinite; stroke-dasharray: 13 7; }
+.autox-loader-speed-lines { animation: autox-loader-lines .55s ease-in-out infinite alternate; }
+.autox-loader-progress { animation: autox-loader-progress 1.7s cubic-bezier(.2,.72,.25,1) forwards; box-shadow: 0 0 18px rgba(237,28,36,.6); }
