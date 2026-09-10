@@ -40,7 +40,7 @@ export function ProductGrid({ products, totalCount, sort, onSortChange }: Produc
               aria-label="Sort products"
               value={sort}
               onChange={(e) => onSortChange(e.target.value)}
-              className="appearance-none bg-autox-panel3 border border-autox-border rounded-sm text-xs text-white pl-3 pr-7 h-9 outline-none focus:border-autox-red"
+              className="appearance-none bg-autox-panel3 border border-autox-border rounded-xl text-xs text-white pl-3 pr-7 h-9 outline-none focus:border-autox-red"
             >
               {sortOptions.map((o) => (
                 <option key={o.value} value={o.value}>
@@ -50,7 +50,7 @@ export function ProductGrid({ products, totalCount, sort, onSortChange }: Produc
             </select>
             <ChevronDown size={13} className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-autox-gray" />
           </div>
-          <div className="flex border border-autox-border rounded-sm overflow-hidden">
+          <div className="flex border border-autox-border rounded-xl overflow-hidden">
             <button
               aria-label="Grid view"
               aria-pressed={view === "grid"}

@@ -8,6 +8,7 @@ import { and, desc, eq } from "drizzle-orm";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import { formatPrice } from "@/lib/utils/format";
 import { OrderTimeline, TrackingUpdates } from "@/components/orders/OrderTimeline";
+import { CopyOrderNumber } from "@/components/orders/CopyOrderNumber";
 import { ArrowRight, Headphones, Info, MapPin, Package, PackageCheck, Search, Truck, Zap, ReceiptText, Phone, CreditCard } from "lucide-react";
 
 export const metadata: Metadata = { title: "Track Your Order" };
@@ -95,7 +96,13 @@ export default async function TrackOrderPage({ searchParams }: { searchParams: P
               <section className="overflow-hidden rounded-2xl bg-[#101012] shadow-[0_18px_50px_rgba(0,0,0,.24)]">
                 <div className="flex items-center gap-3 bg-gradient-to-r from-autox-red/[.12] to-transparent px-5 py-4">
                   <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-autox-red/10 text-autox-red"><ReceiptText size={18} /></span>
-                  <div><h2 className="text-sm font-extrabold uppercase text-white">Order Summary</h2><p className="mt-0.5 text-[11px] text-zinc-500">{order.orderNumber} · {created?.toLocaleDateString("en-LK", { day: "numeric", month: "short", year: "numeric" })}</p></div>
+                  <div className="min-w-0 flex-1">
+                    <h2 className="text-sm font-extrabold uppercase text-white">Order Summary</h2>
+                    <div className="mt-1 flex flex-wrap items-center gap-2">
+                      <p className="text-[11px] text-zinc-500">{order.orderNumber} · {created?.toLocaleDateString("en-LK", { day: "numeric", month: "short", year: "numeric" })}</p>
+                      <CopyOrderNumber value={order.orderNumber} />
+                    </div>
+                  </div>
                 </div>
 
                 <div className="px-5 pb-5">

@@ -156,12 +156,12 @@ export function LiveProductGrid({ brandSlug, categorySlug, vehicleType, model, y
           <p className="text-sm text-autox-gray">{loading ? "Loading…" : <><span className="font-semibold text-white">{products.length}</span>{hasMore ? "+" : ""} results</>}</p>
           <div className="flex items-center gap-2">
             {filterGroups.length > 0 && <FilterDrawerTrigger onClick={() => setDrawerOpen(true)} />}
-            <div className="flex overflow-hidden rounded-sm border border-autox-border lg:hidden" aria-label="Mobile product layout">
+            <div className="flex overflow-hidden rounded-xl border border-autox-border lg:hidden" aria-label="Mobile product layout">
               <button type="button" aria-label="Two column view" aria-pressed={mobileColumns === 2} onClick={() => setMobileColumns(2)} className={cn("flex h-9 w-9 items-center justify-center", mobileColumns === 2 ? "bg-autox-red text-white" : "bg-autox-panel3 text-autox-gray")}><LayoutGrid size={15} /></button>
               <button type="button" aria-label="One column view" aria-pressed={mobileColumns === 1} onClick={() => setMobileColumns(1)} className={cn("flex h-9 w-9 items-center justify-center border-l border-autox-border", mobileColumns === 1 ? "bg-autox-red text-white" : "bg-autox-panel3 text-autox-gray")}><Rows3 size={15} /></button>
             </div>
             <div className="relative">
-              <select aria-label="Sort products" value={sort} onChange={(e) => setSort(e.target.value)} className="h-9 max-w-[150px] appearance-none rounded-sm border border-autox-border bg-autox-panel3 pl-3 pr-7 text-xs text-white outline-none focus:border-autox-red sm:max-w-none">
+              <select aria-label="Sort products" value={sort} onChange={(e) => setSort(e.target.value)} className="h-9 max-w-[150px] appearance-none rounded-xl border border-autox-border bg-autox-panel3 pl-3 pr-7 text-xs text-white outline-none focus:border-autox-red sm:max-w-none">
                 {sortOptions.map((o) => <option key={o.value} value={o.value}>Sort: {o.label}</option>)}
               </select>
               <ChevronDown size={13} className="pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-autox-gray" />
@@ -173,7 +173,7 @@ export function LiveProductGrid({ brandSlug, categorySlug, vehicleType, model, y
           <>
             <div className={cn("grid gap-3 sm:gap-4 sm:grid-cols-3 xl:grid-cols-4", mobileColumns === 2 ? "grid-cols-2" : "grid-cols-1")}>
               {products.map((product) => (
-                <div key={product.id} className="group relative flex min-w-0 flex-col overflow-hidden rounded-md border border-autox-border bg-autox-panel transition-all duration-300 hover:-translate-y-1 hover:border-autox-red/60">
+                <div key={product.id} className="group relative flex min-w-0 flex-col overflow-hidden rounded-2xl border border-autox-border bg-autox-panel transition-all duration-300 hover:-translate-y-1 hover:border-autox-red/60">
                   <div className="relative aspect-square overflow-hidden bg-autox-panel3">
                     {product.genuine && <Badge variant="genuine" className="absolute left-2 top-2 z-10">Genuine</Badge>}
                     {product.discount && <Badge variant="discount" className="absolute right-10 top-2 z-10">{product.discount}% OFF</Badge>}
@@ -187,15 +187,15 @@ export function LiveProductGrid({ brandSlug, categorySlug, vehicleType, model, y
                     <div className="mt-2"><Rating value={product.rating} reviewCount={product.reviewCount} /></div>
                     <div className="mt-2 flex flex-wrap items-end justify-between gap-1"><PriceDisplay price={product.price} previousPrice={product.previousPrice ?? undefined} size="sm" /><span className={cn("text-[9px] font-semibold sm:text-[10px]", product.stock > 0 ? "text-green-500" : "text-autox-gray")}>{product.stock > 0 ? "In Stock" : "Out of Stock"}</span></div>
                     <div className="mt-3 flex flex-col gap-1.5">
-                      <button disabled={product.stock === 0 || addingId === product.id} onClick={() => addToCart(product.id)} className={cn("relative flex h-9 items-center justify-center gap-1.5 overflow-hidden rounded-sm text-[10px] font-bold uppercase tracking-wide text-white transition-all disabled:bg-autox-panel3 disabled:text-autox-gray sm:text-xs", addedId === product.id ? "bg-autox-panel3 text-white ring-1 ring-autox-red" : "bg-autox-red hover:bg-autox-redDark")}>{addingId === product.id ? <><Bike size={15} className="autox-bike-run" /><span className="opacity-60">Adding…</span></> : addedId === product.id ? <><Check size={14} /> Added</> : <><ShoppingCart size={13} /> Add to Cart</>}</button>
-                      {product.installmentAvailable && <span className="flex h-8 items-center justify-center gap-1.5 rounded-sm border border-autox-border text-[10px] font-semibold uppercase tracking-wide text-autox-gray sm:text-[11px]"><CreditCard size={12} /> Installment available</span>}
-                      <button type="button" onClick={() => addToCompare(product.id)} className="flex h-8 items-center justify-center gap-1.5 rounded-sm border border-autox-border text-[10px] font-semibold uppercase tracking-wide text-autox-gray hover:border-autox-red/50 hover:text-white sm:text-[11px]"><GitCompareArrows size={12}/>{compared.has(product.id) ? "Compared" : "Compare"}</button>
+                      <button disabled={product.stock === 0 || addingId === product.id} onClick={() => addToCart(product.id)} className={cn("relative flex h-9 items-center justify-center gap-1.5 overflow-hidden rounded-xl text-[10px] font-bold uppercase tracking-wide text-white transition-all disabled:bg-autox-panel3 disabled:text-autox-gray sm:text-xs", addedId === product.id ? "bg-autox-panel3 text-white ring-1 ring-autox-red" : "bg-autox-red hover:bg-autox-redDark")}>{addingId === product.id ? <><Bike size={15} className="autox-bike-run" /><span className="opacity-60">Adding…</span></> : addedId === product.id ? <><Check size={14} /> Added</> : <><ShoppingCart size={13} /> Add to Cart</>}</button>
+                      {product.installmentAvailable && <span className="flex h-8 items-center justify-center gap-1.5 rounded-xl border border-autox-border text-[10px] font-semibold uppercase tracking-wide text-autox-gray sm:text-[11px]"><CreditCard size={12} /> Installment available</span>}
+                      <button type="button" onClick={() => addToCompare(product.id)} className="flex h-8 items-center justify-center gap-1.5 rounded-xl border border-autox-border text-[10px] font-semibold uppercase tracking-wide text-autox-gray hover:border-autox-red/50 hover:text-white sm:text-[11px]"><GitCompareArrows size={12}/>{compared.has(product.id) ? "Compared" : "Compare"}</button>
                     </div>
                   </div>
                 </div>
               ))}
             </div>
-            {hasMore && <div className="mt-7 flex justify-center"><button type="button" onClick={loadMore} disabled={loadingMore} className="min-w-40 rounded-sm border border-autox-red bg-autox-red px-6 py-3 text-xs font-bold uppercase tracking-wide text-white transition-colors hover:bg-autox-redDark disabled:opacity-60">{loadingMore ? "Loading…" : "Load More"}</button></div>}
+            {hasMore && <div className="mt-7 flex justify-center"><button type="button" onClick={loadMore} disabled={loadingMore} className="min-w-40 rounded-xl border border-autox-red bg-autox-red px-6 py-3 text-xs font-bold uppercase tracking-wide text-white transition-colors hover:bg-autox-redDark disabled:opacity-60">{loadingMore ? "Loading…" : "Load More"}</button></div>}
           </>
         )}
       </div>

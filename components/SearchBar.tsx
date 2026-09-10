@@ -70,7 +70,7 @@ export function SearchBar({ mobile = false, onNavigate, autoFocus = false }: { m
       <form
         role="search"
         onSubmit={(e) => { e.preventDefault(); submit(); }}
-        className={cn("flex items-stretch overflow-hidden rounded-sm border border-autox-border transition-colors focus-within:border-autox-red", mobile ? "h-10" : "h-11")}
+        className={cn("flex items-stretch overflow-hidden rounded-xl border border-autox-border transition-colors focus-within:border-autox-red", mobile ? "h-10" : "h-11")}
       >
         <label htmlFor={mobile ? "mobile-site-search" : "site-search"} className="sr-only">Search for parts, brands, categories or models</label>
         <input
@@ -97,14 +97,14 @@ export function SearchBar({ mobile = false, onNavigate, autoFocus = false }: { m
       </form>
 
       {open && query.trim().length >= 3 && (
-        <div className="absolute left-0 right-0 top-full z-[360] mt-1 overflow-hidden rounded-sm border border-autox-border bg-autox-panel2 shadow-2xl">
+        <div className="absolute left-0 right-0 top-full z-[360] mt-1 overflow-hidden rounded-xl border border-autox-border bg-autox-panel2 shadow-2xl">
           {loading ? (
             <div className="px-4 py-4 text-xs text-autox-gray">Searching…</div>
           ) : results.length > 0 ? (
             <>
               {results.map((product) => (
                 <Link key={product.id} href={`/products/${product.slug}`} onClick={() => { setOpen(false); onNavigate?.(); }} className="flex items-center gap-3 border-b border-autox-border/70 px-3 py-2.5 transition-colors last:border-0 hover:bg-autox-panel3">
-                  <div className="h-10 w-10 shrink-0 overflow-hidden rounded-sm bg-autox-panel3">
+                  <div className="h-10 w-10 shrink-0 overflow-hidden rounded-xl bg-autox-panel3">
                     {product.images?.[0] && <img src={product.images[0].url} alt={product.images[0].alt || product.name} className="h-full w-full object-cover" />}
                   </div>
                   <div className="min-w-0 flex-1">

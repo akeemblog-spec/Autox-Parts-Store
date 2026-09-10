@@ -7,7 +7,7 @@ export function PromoBanner({ banner }: { banner: PromoBannerData }) {
   return (
     <div
       className={cn(
-        "relative flex items-center justify-between gap-4 overflow-hidden rounded-md border border-autox-border p-6 lg:p-7 min-h-[180px]",
+        "relative flex items-center justify-between gap-4 overflow-hidden rounded-2xl border border-autox-border p-6 lg:p-7 min-h-[180px]",
         isInstallment
           ? "bg-gradient-to-br from-autox-panel via-autox-panel to-black"
           : "bg-gradient-to-br from-autox-redDark/20 via-autox-panel to-black"

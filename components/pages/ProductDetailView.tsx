@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Minus, Plus, ShoppingCart, Zap, CreditCard, Heart, Truck, ShieldCheck, RotateCcw, Bike, Check, GitCompareArrows } from "lucide-react";
@@ -11,6 +11,7 @@ import { PriceDisplay } from "@/components/ui/PriceDisplay";
 import { Button } from "@/components/ui/Button";
 import { formatPrice } from "@/lib/utils/format";
 import { cn } from "@/lib/utils/cn";
+import { loadSavedProductState } from "@/lib/client/saved-products-cache";
 import type { findProductBySlug, findRelatedProducts } from "@/lib/db-queries/products";
 
 type ProductWithRelations = NonNullable<Awaited<ReturnType<typeof findProductBySlug>>>;
@@ -40,6 +41,18 @@ export function ProductDetailView({
   const [added, setAdded] = useState(false);
   const [compared, setCompared] = useState(false);
   const [reviewRating,setReviewRating]=useState(5);const[reviewComment,setReviewComment]=useState("");const[reviewMessage,setReviewMessage]=useState<string|null>(null);
+
+  useEffect(() => {
+    if (!session?.user?.id || session.user.invalidated) return;
+    let mounted = true;
+    loadSavedProductState().then((saved) => {
+      if (!mounted) return;
+      setWishlisted(saved.wishlist.has(product.id));
+      setCompared(saved.compare.has(product.id));
+    }).catch(() => undefined);
+    return () => { mounted = false; };
+  }, [session?.user?.id, session?.user?.invalidated, product.id]);
+
   const submitReview=async(e:React.FormEvent)=>{e.preventDefault();if(!session?.user?.id){router.push(`/login?callbackUrl=/products/${product.slug}`);return;}const r=await fetch('/api/reviews',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({productId:product.id,rating:reviewRating,comment:reviewComment})});const d=await r.json();setReviewMessage(r.ok?'Thanks. Your verified-purchase review is awaiting approval.':d.error||'Unable to submit review.');if(r.ok)setReviewComment('')};
 
   const inStock = product.stock > 0;
@@ -113,7 +126,7 @@ export function ProductDetailView({
 
         <section className="mx-auto max-w-[1600px] px-4 lg:px-6 py-6 grid lg:grid-cols-2 gap-10">
           <div>
-            <div className="aspect-square bg-autox-panel border border-autox-border rounded-md overflow-hidden relative">
+            <div className="aspect-square bg-autox-panel border border-autox-border rounded-2xl overflow-hidden relative">
               {product.genuine && <Badge variant="genuine" className="absolute top-3 left-3 z-10">Genuine</Badge>}
               {product.images[activeImage] && (
                 <img
@@ -130,7 +143,7 @@ export function ProductDetailView({
                     key={img.id}
                     onClick={() => setActiveImage(idx)}
                     className={cn(
-                      "w-16 h-16 rounded-sm overflow-hidden border-2",
+                      "w-16 h-16 rounded-xl overflow-hidden border-2",
                       idx === activeImage ? "border-autox-red" : "border-autox-border"
                     )}
                   >
@@ -171,14 +184,14 @@ export function ProductDetailView({
 
             <div className="mt-4 flex flex-wrap gap-2">
               {product.compatibility.map((c) => (
-                <span key={c.id} className="text-xs bg-autox-panel3 border border-autox-border rounded-sm px-2.5 py-1 text-autox-gray">
+                <span key={c.id} className="text-xs bg-autox-panel3 border border-autox-border rounded-xl px-2.5 py-1 text-autox-gray">
                   Fits: {c.brandName} {c.modelName} ({c.years})
                 </span>
               ))}
             </div>
 
             <div className="mt-6 flex flex-wrap items-center gap-3">
-              <div className="flex items-center border border-autox-border rounded-sm">
+              <div className="flex items-center border border-autox-border rounded-xl">
                 <button
                   aria-label="Decrease quantity"
                   onClick={() => setQuantity((q) => Math.max(1, q - 1))}
@@ -201,12 +214,12 @@ export function ProductDetailView({
               <Button disabled={!inStock || adding} onClick={() => addToCart(true)} variant="secondary" className="flex-1 min-w-[160px] h-11">
                 <Zap size={16} /> Buy Now
               </Button>
-              <button type="button" aria-label="Add to comparison" onClick={addToCompare} className="flex h-11 items-center justify-center gap-2 rounded-sm border border-autox-border px-3 text-xs font-bold uppercase text-autox-gray hover:border-autox-red hover:text-white"><GitCompareArrows size={16}/><span className="hidden sm:inline">{compared ? "Compared" : "Compare"}</span></button>
+              <button type="button" aria-label="Add to comparison" onClick={addToCompare} className="flex h-11 items-center justify-center gap-2 rounded-xl border border-autox-border px-3 text-xs font-bold uppercase text-autox-gray hover:border-autox-red hover:text-white"><GitCompareArrows size={16}/><span className="hidden sm:inline">{compared ? "Compared" : "Compare"}</span></button>
               <button
                 aria-label={wishlisted ? "Remove from wishlist" : "Add to wishlist"}
                 aria-pressed={wishlisted}
                 onClick={toggleWishlist}
-                className="w-11 h-11 flex items-center justify-center border border-autox-border rounded-sm hover:border-autox-red"
+                className="w-11 h-11 flex items-center justify-center border border-autox-border rounded-xl hover:border-autox-red"
               >
                 <Heart size={17} className={cn("text-white", wishlisted && "fill-autox-red text-autox-red")} />
               </button>
@@ -215,7 +228,7 @@ export function ProductDetailView({
             {message && <p className="mt-2 text-xs text-autox-gray">{message}</p>}
 
             {product.installmentAvailable && (
-              <div className="mt-3 flex items-center gap-2 text-xs text-autox-gray bg-autox-panel border border-autox-border rounded-sm px-3 py-2.5">
+              <div className="mt-3 flex items-center gap-2 text-xs text-autox-gray bg-autox-panel border border-autox-border rounded-xl px-3 py-2.5">
                 <CreditCard size={15} className="text-autox-red" />
                 Available on 0% interest installment plans &mdash; select at checkout.
               </div>
@@ -247,7 +260,7 @@ export function ProductDetailView({
           </div>
         </section>
 
-        <section className="mx-auto max-w-[1600px] border-t border-autox-border px-4 py-8 lg:px-6"><div className="grid gap-6 lg:grid-cols-[1.4fr_.6fr]"><div><h2 className="mb-4 text-lg font-extrabold uppercase tracking-wide text-white">Customer Reviews</h2>{product.reviews.length? <div className="space-y-3">{product.reviews.map(r=><article key={r.id} className="rounded-md border border-autox-border bg-autox-panel p-4"><div className="flex items-center justify-between"><b className="text-sm text-white">{r.user.name||'Verified Customer'}</b><span className="text-xs text-autox-red">{'★'.repeat(r.rating)}{'☆'.repeat(5-r.rating)}</span></div>{r.comment&&<p className="mt-2 text-sm text-autox-gray">{r.comment}</p>}<p className="mt-2 text-[10px] font-bold uppercase text-green-400">Verified Purchase</p></article>)}</div>:<p className="text-sm text-autox-gray">No approved reviews yet.</p>}</div><form onSubmit={submitReview} className="h-fit rounded-md border border-autox-border bg-autox-panel p-4"><h3 className="text-sm font-bold text-white">Review this product</h3><p className="mt-1 text-[11px] text-autox-gray">Available to customers with a delivered purchase.</p><select value={reviewRating} onChange={e=>setReviewRating(Number(e.target.value))} className="mt-3 w-full rounded border border-autox-border bg-black p-2 text-sm">{[5,4,3,2,1].map(n=><option key={n} value={n}>{n} stars</option>)}</select><textarea value={reviewComment} onChange={e=>setReviewComment(e.target.value)} placeholder="Share your experience" className="mt-2 min-h-24 w-full rounded border border-autox-border bg-black p-2 text-sm"/><button className="mt-2 w-full rounded bg-autox-red p-2 text-xs font-bold">Submit Review</button>{reviewMessage&&<p className="mt-2 text-xs text-autox-gray">{reviewMessage}</p>}</form></div></section>
+        <section className="mx-auto max-w-[1600px] border-t border-autox-border px-4 py-8 lg:px-6"><div className="grid gap-6 lg:grid-cols-[1.4fr_.6fr]"><div><h2 className="mb-4 text-lg font-extrabold uppercase tracking-wide text-white">Customer Reviews</h2>{product.reviews.length? <div className="space-y-3">{product.reviews.map(r=><article key={r.id} className="rounded-2xl border border-autox-border bg-autox-panel p-4"><div className="flex items-center justify-between"><b className="text-sm text-white">{r.user.name||'Verified Customer'}</b><span className="text-xs text-autox-red">{'★'.repeat(r.rating)}{'☆'.repeat(5-r.rating)}</span></div>{r.comment&&<p className="mt-2 text-sm text-autox-gray">{r.comment}</p>}<p className="mt-2 text-[10px] font-bold uppercase text-green-400">Verified Purchase</p></article>)}</div>:<p className="text-sm text-autox-gray">No approved reviews yet.</p>}</div><form onSubmit={submitReview} className="h-fit rounded-2xl border border-autox-border bg-autox-panel p-4"><h3 className="text-sm font-bold text-white">Review this product</h3><p className="mt-1 text-[11px] text-autox-gray">Available to customers with a delivered purchase.</p><select value={reviewRating} onChange={e=>setReviewRating(Number(e.target.value))} className="mt-3 w-full rounded border border-autox-border bg-black p-2 text-sm">{[5,4,3,2,1].map(n=><option key={n} value={n}>{n} stars</option>)}</select><textarea value={reviewComment} onChange={e=>setReviewComment(e.target.value)} placeholder="Share your experience" className="mt-2 min-h-24 w-full rounded border border-autox-border bg-black p-2 text-sm"/><button className="mt-2 w-full rounded bg-autox-red p-2 text-xs font-bold">Submit Review</button>{reviewMessage&&<p className="mt-2 text-xs text-autox-gray">{reviewMessage}</p>}</form></div></section>
 
         {related.length > 0 && (
           <section className="mx-auto max-w-[1600px] px-4 lg:px-6 py-8 border-t border-autox-border pb-14">
@@ -257,7 +270,7 @@ export function ProductDetailView({
                 <a
                   key={p.id}
                   href={`/products/${p.slug}`}
-                  className="group flex flex-col bg-autox-panel border border-autox-border rounded-md overflow-hidden hover:border-autox-red/60 transition-colors"
+                  className="group flex flex-col bg-autox-panel border border-autox-border rounded-2xl overflow-hidden hover:border-autox-red/60 transition-colors"
                 >
                   <div className="aspect-square bg-autox-panel3 overflow-hidden">
                     {p.images[0] && (

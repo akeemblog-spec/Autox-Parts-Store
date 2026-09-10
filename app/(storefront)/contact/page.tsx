@@ -27,21 +27,21 @@ export default function ContactPage() {
               Have a question about a part, an order, or a fitment? We&apos;re here to help.
             </p>
             <div className="space-y-4">
-              <div className="flex items-center gap-3 bg-autox-panel border border-autox-border rounded-md p-4">
+              <div className="flex items-center gap-3 bg-autox-panel border border-autox-border rounded-2xl p-4">
                 <Phone size={18} className="text-autox-red" />
                 <div>
                   <p className="text-white text-sm font-semibold">+94 11 234 5678</p>
                   <p className="text-autox-gray text-xs">Mon–Sat, 8:30 AM – 6:00 PM</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3 bg-autox-panel border border-autox-border rounded-md p-4">
+              <div className="flex items-center gap-3 bg-autox-panel border border-autox-border rounded-2xl p-4">
                 <Mail size={18} className="text-autox-red" />
                 <div>
                   <p className="text-white text-sm font-semibold">support@autoxparts.lk</p>
                   <p className="text-autox-gray text-xs">We reply within 24 hours</p>
                 </div>
               </div>
-              <div className="flex items-center gap-3 bg-autox-panel border border-autox-border rounded-md p-4">
+              <div className="flex items-center gap-3 bg-autox-panel border border-autox-border rounded-2xl p-4">
                 <MapPin size={18} className="text-autox-red" />
                 <div>
                   <p className="text-white text-sm font-semibold">Colombo, Sri Lanka</p>

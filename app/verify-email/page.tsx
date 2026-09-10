@@ -88,7 +88,7 @@ function VerifyEmailContent() {
 
   return (
     <main className="min-h-[70vh] grid place-items-center px-4">
-      <div className="w-full max-w-md rounded-md border border-autox-border bg-autox-panel p-7">
+      <div className="w-full max-w-md rounded-2xl border border-autox-border bg-autox-panel p-7">
         <div className="mb-6 text-2xl font-black text-white">
           AUTO<span className="text-autox-red">X</span>
         </div>
@@ -107,7 +107,7 @@ function VerifyEmailContent() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Email address"
               autoComplete="email"
-              className="mt-5 w-full rounded-sm border border-autox-border bg-autox-panel3 px-3 py-3 text-sm text-white outline-none focus:border-autox-red"
+              className="mt-5 w-full rounded-xl border border-autox-border bg-autox-panel3 px-3 py-3 text-sm text-white outline-none focus:border-autox-red"
             />
 
             <button

@@ -53,7 +53,7 @@ function ResetPasswordContent() {
     <main className="min-h-[70vh] grid place-items-center px-4">
       <form
         onSubmit={submit}
-        className="w-full max-w-md rounded-md border border-autox-border bg-autox-panel p-7"
+        className="w-full max-w-md rounded-2xl border border-autox-border bg-autox-panel p-7"
       >
         <div className="mb-6 text-2xl font-black text-white">
           AUTO<span className="text-autox-red">X</span>
@@ -72,7 +72,7 @@ function ResetPasswordContent() {
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="mt-5 w-full rounded-sm border border-autox-border bg-autox-panel3 px-3 py-3 text-sm text-white outline-none focus:border-autox-red"
+              className="mt-5 w-full rounded-xl border border-autox-border bg-autox-panel3 px-3 py-3 text-sm text-white outline-none focus:border-autox-red"
               placeholder="New password (10+ characters)"
               autoComplete="new-password"
             />
@@ -84,7 +84,7 @@ function ResetPasswordContent() {
               type="password"
               value={confirm}
               onChange={(e) => setConfirm(e.target.value)}
-              className="mt-3 w-full rounded-sm border border-autox-border bg-autox-panel3 px-3 py-3 text-sm text-white outline-none focus:border-autox-red"
+              className="mt-3 w-full rounded-xl border border-autox-border bg-autox-panel3 px-3 py-3 text-sm text-white outline-none focus:border-autox-red"
               placeholder="Confirm password"
               autoComplete="new-password"
             />

@@ -39,7 +39,7 @@ export function RegisterForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       {error && (
-        <div className="flex items-center gap-2 bg-autox-red/10 border border-autox-red/40 rounded-sm px-3 py-2.5 text-sm text-autox-red">
+        <div className="flex items-center gap-2 bg-autox-red/10 border border-autox-red/40 rounded-xl px-3 py-2.5 text-sm text-autox-red">
           <AlertCircle size={15} className="shrink-0" /> {error}
         </div>
       )}
@@ -53,7 +53,7 @@ export function RegisterForm() {
           required
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="w-full h-11 bg-autox-panel3 border border-autox-border rounded-sm px-3 text-sm text-white outline-none focus:border-autox-red"
+          className="w-full h-11 bg-autox-panel3 border border-autox-border rounded-xl px-3 text-sm text-white outline-none focus:border-autox-red"
         />
       </div>
       <div>
@@ -66,7 +66,7 @@ export function RegisterForm() {
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full h-11 bg-autox-panel3 border border-autox-border rounded-sm px-3 text-sm text-white outline-none focus:border-autox-red"
+          className="w-full h-11 bg-autox-panel3 border border-autox-border rounded-xl px-3 text-sm text-white outline-none focus:border-autox-red"
         />
       </div>
       <div>
@@ -80,7 +80,7 @@ export function RegisterForm() {
           minLength={8}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full h-11 bg-autox-panel3 border border-autox-border rounded-sm px-3 text-sm text-white outline-none focus:border-autox-red"
+          className="w-full h-11 bg-autox-panel3 border border-autox-border rounded-xl px-3 text-sm text-white outline-none focus:border-autox-red"
         />
         <p className="text-[11px] text-autox-gray mt-1">At least 8 characters.</p>
       </div>

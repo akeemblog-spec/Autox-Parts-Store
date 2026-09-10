@@ -79,7 +79,7 @@ export function ProductCard({ product }: { product: Product }) {
     setCompared(true); setSavedMembership("compare", product.id, true); window.dispatchEvent(new Event("autox-compare-updated")); toast(data?.alreadyAdded ? "Already in comparison." : "Added to comparison.", "success");
   };
 
-  return <article className="group relative flex flex-col overflow-hidden rounded-xl border border-white/[.08] bg-[#0b0b0d] transition-all duration-300 hover:-translate-y-0.5 hover:border-autox-red/40 hover:shadow-cardGlow">
+  return <article className="group relative flex flex-col overflow-hidden rounded-2xl border border-white/[.08] bg-[#0b0b0d] shadow-[0_10px_28px_rgba(0,0,0,.22)] transition-all duration-300 hover:-translate-y-0.5 hover:border-autox-red/40 hover:shadow-cardGlow">
     <div className="relative aspect-square overflow-hidden bg-autox-panel3">
       {product.genuine && <Badge variant="genuine" className="absolute left-2 top-2 z-10">Genuine</Badge>}
       {product.discount && <Badge variant="discount" className="absolute right-11 top-2 z-10">{product.discount}% OFF</Badge>}

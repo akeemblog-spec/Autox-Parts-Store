@@ -13,16 +13,16 @@ interface ButtonBaseProps {
 
 const variantClasses: Record<Variant, string> = {
   primary:
-    "bg-autox-red text-white hover:bg-autox-redDark shadow-[0_0_0_1px_rgba(237,28,36,0.6)] hover:shadow-redGlow",
-  secondary: "bg-autox-panel3 text-white border border-autox-border hover:border-autox-red/60",
-  outline: "bg-transparent text-white border border-autox-border hover:border-autox-red hover:text-autox-red",
-  ghost: "bg-transparent text-autox-gray hover:text-white",
+    "bg-autox-red text-white shadow-[0_10px_28px_rgba(237,28,36,.28)] hover:bg-autox-redDark hover:shadow-redGlow",
+  secondary: "bg-autox-panel3 text-white border border-autox-border hover:border-autox-red/60 hover:bg-white/[.04]",
+  outline: "bg-transparent text-white border border-autox-border hover:border-autox-red hover:text-autox-red hover:bg-autox-red/[.06]",
+  ghost: "bg-transparent text-autox-gray hover:text-white hover:bg-white/[.04]",
 };
 
 const sizeClasses: Record<Size, string> = {
-  sm: "text-xs px-3 py-2 gap-1.5",
-  md: "text-sm px-5 py-3 gap-2",
-  lg: "text-base px-7 py-4 gap-2.5",
+  sm: "text-xs px-3.5 py-2 gap-1.5 rounded-lg",
+  md: "text-sm px-5 py-3 gap-2 rounded-xl",
+  lg: "text-base px-7 py-4 gap-2.5 rounded-xl",
 };
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>, ButtonBaseProps {}
@@ -33,7 +33,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       <button
         ref={ref}
         className={cn(
-          "inline-flex items-center justify-center font-semibold uppercase tracking-wide rounded-sm transition-all duration-200 active:scale-[0.98] disabled:opacity-50 disabled:pointer-events-none",
+          "inline-flex items-center justify-center font-bold uppercase tracking-wide transition-all duration-200 active:scale-[0.97] disabled:opacity-50 disabled:pointer-events-none",
           variantClasses[variant],
           sizeClasses[size],
           className
@@ -59,7 +59,7 @@ export function ButtonLink({ href, variant = "primary", size = "md", className, 
       href={href}
       onClick={onClick}
       className={cn(
-        "inline-flex items-center justify-center font-semibold uppercase tracking-wide rounded-sm transition-all duration-200 active:scale-[0.98]",
+        "inline-flex items-center justify-center font-bold uppercase tracking-wide transition-all duration-200 active:scale-[0.97]",
         variantClasses[variant],
         sizeClasses[size],
         className

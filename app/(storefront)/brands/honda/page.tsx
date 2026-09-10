@@ -62,7 +62,7 @@ export default async function HondaBrandPage() {
               <p className="text-autox-gray text-sm mt-3 max-w-sm">{brand.description}</p>
               <div className="grid grid-cols-2 gap-2 mt-5 max-w-md">
                 {featureCards.map((f) => (
-                  <div key={f.label} className="flex items-center gap-2 bg-autox-panel border border-autox-border rounded-sm px-3 py-2.5">
+                  <div key={f.label} className="flex items-center gap-2 bg-autox-panel border border-autox-border rounded-xl px-3 py-2.5">
                     <f.icon size={16} className="text-autox-red shrink-0" />
                     <span className="text-[11px] font-semibold text-white leading-tight">{f.label}</span>
                   </div>
@@ -73,7 +73,7 @@ export default async function HondaBrandPage() {
               <img
                 src={brand.coverImage || brand.vehicleImage}
                 alt="Honda motorcycle"
-                className="w-full max-w-lg object-contain drop-shadow-[0_20px_60px_rgba(237,28,36,0.35)] rounded-md"
+                className="w-full max-w-lg object-contain drop-shadow-[0_20px_60px_rgba(237,28,36,0.35)] rounded-2xl"
               />
             </div>
           </div>

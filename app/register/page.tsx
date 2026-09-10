@@ -20,7 +20,7 @@ export default function RegisterPage() {
       <main className="mx-auto max-w-md px-4 py-16">
         <h1 className="text-2xl font-extrabold text-white text-center mb-1">Create Account</h1>
         <p className="text-autox-gray text-sm text-center mb-8">Join AutoX Parts Store</p>
-        <div className="bg-autox-panel border border-autox-border rounded-md p-6">
+        <div className="bg-autox-panel border border-autox-border rounded-2xl p-6">
           <RegisterForm />
         </div>
       </main>

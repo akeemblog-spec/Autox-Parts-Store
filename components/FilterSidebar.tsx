@@ -73,7 +73,7 @@ export function FilterSidebar({
                           type="checkbox"
                           checked={selected[group.id]?.includes(opt.value) ?? false}
                           onChange={() => onToggle(group.id, opt.value)}
-                          className="w-4 h-4 rounded-sm border-autox-border bg-autox-panel3 accent-autox-red"
+                          className="w-4 h-4 rounded border-autox-border bg-autox-panel3 accent-autox-red"
                         />
                         <span className="group-hover:text-white transition-colors">{opt.label}</span>
                       </span>

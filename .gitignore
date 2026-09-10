@@ -4,6 +4,4 @@ out
 .env*
 .env.local
 !.env.example
-.DS_Storetsconfig.tsbuildinfo
-
-tsconfig.tsbuildinfo
+.DS_Store
