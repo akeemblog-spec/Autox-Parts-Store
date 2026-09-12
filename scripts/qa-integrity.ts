@@ -163,6 +163,36 @@ expect(text("components/VehicleFinder.tsx").includes("Find Parts For") && text("
 expect(text("components/FilterDrawer.tsx").includes("flex max-h-[88dvh] flex-col") && text("components/FilterDrawer.tsx").includes("min-h-0 flex-1 overflow-y-auto"), "mobile Filter drawer keeps header fixed while content scrolls");
 expect(text("components/ui/AppUIProvider.tsx").includes("6.8rem+env(safe-area-inset-bottom)"), "mobile toasts clear the floating navigation");
 
+// 2026-09 completion + hero/installment regression checks.
+for (const page of [
+  "app/not-found.tsx",
+  "app/error.tsx",
+  "app/global-error.tsx",
+  "app/(storefront)/error.tsx",
+  "app/(storefront)/not-found.tsx",
+  "app/(storefront)/about/page.tsx",
+  "app/(storefront)/faq/page.tsx",
+  "app/(storefront)/warranty/page.tsx",
+  "app/(storefront)/returns-refunds/page.tsx",
+  "app/(storefront)/privacy/page.tsx",
+  "app/(storefront)/terms/page.tsx",
+  "app/(storefront)/shipping-policy/page.tsx",
+  "app/(storefront)/delivery/page.tsx",
+  "app/(storefront)/installments/page.tsx",
+]) expect(existsSync(join(root, page)), `required storefront page exists: ${page}`);
+const hero2026 = text("components/Hero.tsx");
+expect(hero2026.includes("SWIPE_THRESHOLD") && hero2026.includes("onPointerMove") && hero2026.includes("touch-pan-y"), "Hero supports touch/mouse swipe without blocking vertical scrolling");
+expect(hero2026.includes("h-[700px]") && hero2026.includes("object-contain") && hero2026.includes("object-cover"), "Hero has fixed responsive height and controlled image treatment");
+expect(hero2026.includes("new window.Image()"), "Hero preloads slide images before transitions");
+expect(text("components/ModelSelector.tsx").includes("hover:border-autox-red") && !text("components/ModelSelector.tsx").includes("hover:-translate-y-0.5"), "model hover keeps red top border visible");
+expect(existsSync(join(root, "components/installments/InstallmentModal.tsx")), "reusable installment modal exists");
+expect(text("components/LiveProductGrid.tsx").includes("<InstallmentModal") && text("components/pages/ProductDetailView.tsx").includes("<InstallmentModal"), "installment modal is connected to product grid and product detail");
+expect(text("app/(storefront)/cart/page.tsx").includes("outsideColomboStandardDeliveryFee") && text("app/api/orders/route.ts").includes("delivery_fee_outside_colombo"), "regional delivery pricing stays synced between checkout and order API");
+expect(text("components/admin/AdminGeneralSettings.tsx").includes("Regional Shipping Settings"), "regional shipping fees are admin configurable");
+expect(text("components/pages/BrandPageServer.tsx").includes("Popular {brand.name} models") && text("app/(storefront)/brands/honda/page.tsx").includes("BrandPageServer"), "all brand detail pages share the polished brand layout");
+expect(text("components/HomeLaunchExperience.module.css").includes("width: 65%"), "home launcher bike uses requested 65% width");
+expect(text("components/HomeLaunchExperience.tsx").includes("/images/ui/loader-ui.webp") && existsSync(join(root, "public/images/ui/loader-ui.webp")), "home launcher uses optimized WebP bike asset");
+
 if (failed) {
   console.error(`\n${failed} integrity check(s) failed.`);
   process.exit(1);

@@ -23,13 +23,19 @@ const serviceLinks = [
   { label: "Services", href: "/services" },
   { label: "Offers", href: "/offers" },
   { label: "Contact", href: "/contact" },
-  { label: "About Us", href: "/contact" },
+  { label: "About AutoX", href: "/about" },
+  { label: "Delivery", href: "/delivery" },
+  { label: "Installments", href: "/installments" },
 ];
 
 const customerCareLinks = [
-  { label: "Help & Support", href: "/contact" },
+  { label: "FAQ", href: "/faq" },
   { label: "Track Order", href: "/orders/track" },
-  { label: "My Account", href: "/account" },
+  { label: "Warranty", href: "/warranty" },
+  { label: "Returns & Refunds", href: "/returns-refunds" },
+  { label: "Shipping Policy", href: "/shipping-policy" },
+  { label: "Privacy Policy", href: "/privacy" },
+  { label: "Terms & Conditions", href: "/terms" },
 ];
 
 type FooterBrand = {
@@ -188,7 +194,7 @@ export function Footer() {
               Customer Care
             </h4>
             <ul className="space-y-1.5">
-              {customerCareLinks.slice(0, 3).map((link) => (
+              {customerCareLinks.map((link) => (
                 <li key={link.label}>
                   <Link
                     href={link.href}

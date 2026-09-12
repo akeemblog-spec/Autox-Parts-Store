@@ -11,11 +11,12 @@ export function BrandCard({ brand, active = false }: { brand: Brand; active?: bo
         active ? "border-autox-red shadow-cardGlow" : "border-autox-border hover:border-autox-red/60"
       )}
     >
-      <div className="aspect-[4/3] overflow-hidden bg-autox-panel3">
+      <div className="relative aspect-[4/3] overflow-hidden bg-[radial-gradient(circle_at_center,rgba(237,28,36,.13),transparent_62%),#0b0b0d]">
+        <div aria-hidden className="absolute inset-x-[18%] bottom-[12%] h-3 rounded-full bg-black/80 blur-lg" />
         <img
           src={brand.vehicleImage}
           alt={`${brand.name} vehicle`}
-          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+          className="relative h-full w-full object-contain p-3 transition-transform duration-500 group-hover:scale-105"
         />
       </div>
       <div className="p-3.5 text-center">

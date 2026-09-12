@@ -117,7 +117,7 @@
   height: auto;
   object-fit: contain;
   filter: drop-shadow(0 14px 24px rgba(0,0,0,.68)) drop-shadow(0 6px 16px rgba(237,28,36,.18));
-  transform: scale(1.12);
+  transform: scale(1);
   transform-origin: center;
 }
 .speedLine {

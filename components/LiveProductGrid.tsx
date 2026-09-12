@@ -11,6 +11,7 @@ import { PriceDisplay } from "@/components/ui/PriceDisplay";
 import { FilterSidebar, FilterGroup } from "@/components/FilterSidebar";
 import { FilterDrawer, FilterDrawerTrigger } from "@/components/FilterDrawer";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { InstallmentModal, type InstallmentProduct } from "@/components/installments/InstallmentModal";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils/cn";
@@ -53,6 +54,7 @@ export function LiveProductGrid({ brandSlug, categorySlug, vehicleType, model, y
   const cachedCatalog = getCachedCatalogOptions();
   const [partTypeOptions, setPartTypeOptions] = useState((cachedCatalog?.partTypes?.length ? cachedCatalog.partTypes : defaultPartTypeOptions) as { label: string; value: string }[]);
   const [mobileColumns, setMobileColumns] = useState<1 | 2>(2);
+  const [installmentProduct, setInstallmentProduct] = useState<InstallmentProduct | null>(null);
 
   useEffect(() => {
     loadCatalogOptions().then((d) => { if (d?.partTypes?.length) setPartTypeOptions(d.partTypes as { label: string; value: string }[]); });
@@ -140,11 +142,19 @@ export function LiveProductGrid({ brandSlug, categorySlug, vehicleType, model, y
   };
 
   const addToCart = async (productId: string) => {
-    if (!session?.user?.id || session.user.invalidated) { router.push("/login"); return; }
+    if (!session?.user?.id || session.user.invalidated) { router.push("/login"); return false; }
     setAddingId(productId);
     const res = await fetch("/api/cart", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ productId, quantity: 1 }) });
     setAddingId(null);
-    if (res.ok) { setAddedId(productId); window.dispatchEvent(new Event("autox-cart-updated")); window.setTimeout(() => setAddedId((current) => current === productId ? null : current), 1200); }
+    if (res.ok) { setAddedId(productId); window.dispatchEvent(new Event("autox-cart-updated")); window.setTimeout(() => setAddedId((current) => current === productId ? null : current), 1200); return true; }
+    return false;
+  };
+
+  const continueInstallment = async (months: 3 | 6) => {
+    if (!installmentProduct) return;
+    if (!session?.user?.id || session.user.invalidated) { router.push(`/login?callbackUrl=/products/${products.find((p)=>p.id===installmentProduct.id)?.slug ?? ""}`); return; }
+    const ok = await addToCart(installmentProduct.id);
+    if (ok) { setInstallmentProduct(null); router.push(`/cart?checkout=1&payment=installment&plan=${months}`); }
   };
 
   return (
@@ -188,7 +198,7 @@ export function LiveProductGrid({ brandSlug, categorySlug, vehicleType, model, y
                     <div className="mt-2 flex flex-wrap items-end justify-between gap-1"><PriceDisplay price={product.price} previousPrice={product.previousPrice ?? undefined} size="sm" /><span className={cn("text-[9px] font-semibold sm:text-[10px]", product.stock > 0 ? "text-green-500" : "text-autox-gray")}>{product.stock > 0 ? "In Stock" : "Out of Stock"}</span></div>
                     <div className="mt-3 flex flex-col gap-1.5">
                       <button disabled={product.stock === 0 || addingId === product.id} onClick={() => addToCart(product.id)} className={cn("relative flex h-9 items-center justify-center gap-1.5 overflow-hidden rounded-xl text-[10px] font-bold uppercase tracking-wide text-white transition-all disabled:bg-autox-panel3 disabled:text-autox-gray sm:text-xs", addedId === product.id ? "bg-autox-panel3 text-white ring-1 ring-autox-red" : "bg-autox-red hover:bg-autox-redDark")}>{addingId === product.id ? <><Bike size={15} className="autox-bike-run" /><span className="opacity-60">Adding…</span></> : addedId === product.id ? <><Check size={14} /> Added</> : <><ShoppingCart size={13} /> Add to Cart</>}</button>
-                      {product.installmentAvailable && <span className="flex h-8 items-center justify-center gap-1.5 rounded-xl border border-autox-border text-[10px] font-semibold uppercase tracking-wide text-autox-gray sm:text-[11px]"><CreditCard size={12} /> Installment</span>}
+                      {product.installmentAvailable && <button type="button" onClick={() => setInstallmentProduct({ id: product.id, name: product.name, brand: product.brand.name, price: product.price, image: product.images[0]?.url, inStock: product.stock > 0, genuine: product.genuine })} className="flex h-8 items-center justify-center gap-1.5 rounded-xl border border-autox-red/25 bg-autox-red/[.045] text-[10px] font-bold uppercase tracking-wide text-zinc-300 transition hover:border-autox-red/60 hover:bg-autox-red/[.09] hover:text-white sm:text-[11px]"><CreditCard size={12} className="text-autox-red" /> Installments</button>}
                       <button type="button" onClick={() => addToCompare(product.id)} className="flex h-8 items-center justify-center gap-1.5 rounded-xl border border-autox-border text-[10px] font-semibold uppercase tracking-wide text-autox-gray hover:border-autox-red/50 hover:text-white sm:text-[11px]"><GitCompareArrows size={12}/>{compared.has(product.id) ? "Compared" : "Compare"}</button>
                     </div>
                   </div>
@@ -201,6 +211,7 @@ export function LiveProductGrid({ brandSlug, categorySlug, vehicleType, model, y
       </div>
 
       {filterGroups.length > 0 && <FilterDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} groups={filterGroups} selected={selected} onToggle={toggleFilter} priceMin={0} priceMax={priceMax} priceBound={500000} onPriceChange={setPriceMax} onApply={() => {}} onClear={clearFilters} />}
+      <InstallmentModal product={installmentProduct} open={Boolean(installmentProduct)} onClose={() => setInstallmentProduct(null)} onContinue={continueInstallment} />
     </div>
   );
 }

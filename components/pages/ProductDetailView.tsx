@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/Button";
 import { formatPrice } from "@/lib/utils/format";
 import { cn } from "@/lib/utils/cn";
 import { loadSavedProductState } from "@/lib/client/saved-products-cache";
+import { InstallmentModal } from "@/components/installments/InstallmentModal";
 import type { findProductBySlug, findRelatedProducts } from "@/lib/db-queries/products";
 
 type ProductWithRelations = NonNullable<Awaited<ReturnType<typeof findProductBySlug>>>;
@@ -41,6 +42,7 @@ export function ProductDetailView({
   const [added, setAdded] = useState(false);
   const [compared, setCompared] = useState(false);
   const [reviewRating,setReviewRating]=useState(5);const[reviewComment,setReviewComment]=useState("");const[reviewMessage,setReviewMessage]=useState<string|null>(null);
+  const [installmentOpen, setInstallmentOpen] = useState(false);
 
   useEffect(() => {
     if (!session?.user?.id || session.user.invalidated) return;
@@ -58,7 +60,7 @@ export function ProductDetailView({
   const inStock = product.stock > 0;
   const partTypeLabel = partTypeLabels[product.partType] ?? product.partType;
 
-  const addToCart = async (goToCart = false) => {
+  const addToCart = async (goToCart = false, installmentMonths?: 3 | 6) => {
     if (!session?.user?.id || session.user.invalidated) {
       router.push(`/login?callbackUrl=/products/${product.slug}`);
       return;
@@ -76,7 +78,7 @@ export function ProductDetailView({
       setAdded(true);
       window.dispatchEvent(new Event("autox-cart-updated"));
       window.setTimeout(() => setAdded(false), 1200);
-      if (goToCart) router.push("/cart?checkout=1");
+      if (goToCart) router.push(installmentMonths ? `/cart?checkout=1&payment=installment&plan=${installmentMonths}` : "/cart?checkout=1");
     } else {
       const data = await res.json().catch(() => ({}));
       setMessage(data.error || "Couldn't add to cart. Try again.");
@@ -228,10 +230,9 @@ export function ProductDetailView({
             {message && <p className="mt-2 text-xs text-autox-gray">{message}</p>}
 
             {product.installmentAvailable && (
-              <div className="mt-3 flex items-center gap-2 text-xs text-autox-gray bg-autox-panel border border-autox-border rounded-xl px-3 py-2.5">
-                <CreditCard size={15} className="text-autox-red" />
-                Available on 0% interest installment plans &mdash; select at checkout.
-              </div>
+              <button type="button" onClick={() => setInstallmentOpen(true)} className="mt-3 flex w-full items-center justify-between gap-3 rounded-xl border border-autox-red/25 bg-autox-red/[.045] px-3 py-3 text-left transition hover:border-autox-red/55 hover:bg-autox-red/[.08]">
+                <span className="flex items-center gap-2"><CreditCard size={15} className="text-autox-red" /><span><b className="block text-xs text-white">Installments</b><span className="text-[10px] text-autox-gray">Preview 3-month and 6-month plans</span></span></span><span className="text-[10px] font-black uppercase tracking-wide text-autox-red">View plans →</span>
+              </button>
             )}
 
             <div className="mt-5 grid sm:grid-cols-3 gap-3">
@@ -292,7 +293,7 @@ export function ProductDetailView({
         )}
       </main>
 
-      
+      <InstallmentModal product={{ id: product.id, name: product.name, brand: product.brand.name, price: product.price, image: product.images[0]?.url, inStock, genuine: product.genuine }} open={installmentOpen} onClose={() => setInstallmentOpen(false)} onContinue={async (months) => { setInstallmentOpen(false); await addToCart(true, months); }} />
     </>
   );
 }

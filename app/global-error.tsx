@@ -1,0 +1,5 @@
+"use client";
+import { RefreshCw } from "lucide-react";
+export default function GlobalError({ reset }: { error: Error & { digest?: string }; reset: () => void }){
+  return <html lang="en"><body className="m-0 bg-black"><main style={{minHeight:"100vh",display:"grid",placeItems:"center",background:"#050506",color:"white",fontFamily:"Arial,sans-serif",padding:"24px"}}><div style={{maxWidth:520,textAlign:"center"}}><div style={{color:"#ed1c24",fontWeight:900,letterSpacing:".2em",fontSize:12}}>AUTOX SYSTEM RECOVERY</div><h1 style={{fontSize:42,margin:"16px 0 8px"}}>Something went wrong.</h1><p style={{color:"#8f8f96",lineHeight:1.7}}>The application could not finish this request. Retry to reload the current experience safely.</p><button onClick={reset} style={{marginTop:20,border:0,borderRadius:12,background:"#ed1c24",color:"white",fontWeight:800,padding:"13px 20px",display:"inline-flex",alignItems:"center",gap:8,cursor:"pointer"}}><RefreshCw size={15}/>Try again</button></div></main></body></html>
+}

@@ -8,7 +8,7 @@ The two project versions are not identical. The modern-ui-v4 source contains add
 ## Loader integration
 - Replaced the previous SVG-style homepage launch bike with the supplied red superbike PNG.
 - Added layered rotating technical rings, reverse/fine rings, red ambient glow, particles, speed streaks, ground reflection, progress percentage, AutoX wordmark and smooth homepage reveal.
-- Uses the exact supplied PNG at `public/images/ui/autox-loader-bike.png`.
+- Uses the optimized transparent WebP at `public/images/ui/autox-loader-bike.webp`.
 - Preserves the existing `HomeLaunchExperience` wrapper and homepage flow.
 - Adds `components/HomeLaunchExperience.module.css` for isolated loader styling.
 - No database, CMS, authentication, cart, order, admin or API behavior changed.

@@ -113,7 +113,7 @@ export default function CartPage() {
   const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
   const [checkoutError, setCheckoutError] = useState<string | null>(null);
   const [deliveryMethod, setDeliveryMethod] = useState<"standard" | "express">("standard");
-  const [shipping, setShipping] = useState({ standardDeliveryFee: 500, expressDeliveryFee: 750, expressEnabled: true });
+  const [shipping, setShipping] = useState({ colomboStandardDeliveryFee: 500, outsideColomboStandardDeliveryFee: 850, colomboExpressExtraFee: 250, outsideColomboExpressExtraFee: 450, expressEnabled: true });
   const [couponCode, setCouponCode] = useState("");
   const [couponDiscount, setCouponDiscount] = useState(0);
   const [couponMessage, setCouponMessage] = useState<string | null>(null);
@@ -133,14 +133,16 @@ export default function CartPage() {
       fetch("/api/payment-methods").then((res) => res.json()),
       fetch("/api/account/addresses").then((res) => (res.ok ? res.json() : { addresses: [] })),
       fetch("/api/storefront/checkout-settings").then((res) =>
-        res.ok ? res.json() : { standardDeliveryFee: 500, expressDeliveryFee: 750, expressEnabled: true },
+        res.ok ? res.json() : { colomboStandardDeliveryFee: 500, outsideColomboStandardDeliveryFee: 850, colomboExpressExtraFee: 250, outsideColomboExpressExtraFee: 450, expressEnabled: true },
       ),
     ])
       .then(([cartData, methodsData, addressData, shippingData]) => {
         setItems(cartData.items ?? []);
         const methods: PaymentMethodOption[] = methodsData.methods ?? [];
         setPaymentMethods(methods);
-        setSelectedMethod(methods[0]?.method ?? null);
+        const wantsInstallment = typeof window !== "undefined" && new URLSearchParams(window.location.search).get("payment") === "installment";
+        const installmentMethod = wantsInstallment ? methods.find((item) => ["installment", "koko", "mintpay"].includes(item.method)) : undefined;
+        setSelectedMethod(installmentMethod?.method ?? methods[0]?.method ?? null);
         setShipping(shippingData);
 
         const addresses: SavedAddress[] = addressData.addresses ?? [];
@@ -212,8 +214,12 @@ export default function CartPage() {
   };
 
   const subtotal = useMemo(() => items.reduce((sum, item) => sum + item.product.price * item.quantity, 0), [items]);
-  const standardDelivery = subtotal > 0 ? shipping.standardDeliveryFee : 0;
-  const expressExtra = subtotal > 0 && deliveryMethod === "express" ? shipping.expressDeliveryFee : 0;
+  const districtKnown = Boolean(address.district.trim());
+  const isColombo = address.district.trim().toLowerCase().includes("colombo");
+  const regionalStandardFee = isColombo ? shipping.colomboStandardDeliveryFee : districtKnown ? shipping.outsideColomboStandardDeliveryFee : shipping.colomboStandardDeliveryFee;
+  const regionalExpressExtra = isColombo ? shipping.colomboExpressExtraFee : districtKnown ? shipping.outsideColomboExpressExtraFee : shipping.colomboExpressExtraFee;
+  const standardDelivery = subtotal > 0 ? regionalStandardFee : 0;
+  const expressExtra = subtotal > 0 && deliveryMethod === "express" ? regionalExpressExtra : 0;
   const delivery = standardDelivery + expressExtra;
   const total = Math.max(0, subtotal - couponDiscount) + delivery;
 
@@ -417,7 +423,7 @@ export default function CartPage() {
                   <div className="grid gap-3 sm:grid-cols-2">
                     <button type="button" onClick={() => setDeliveryMethod("standard")} className={cn("relative rounded-xl border p-4 text-left transition-all", deliveryMethod === "standard" ? "border-autox-red bg-autox-red/[0.07]" : "border-autox-border bg-autox-panel3 hover:border-autox-gray/70")}>
                       <div className="flex items-start justify-between gap-4">
-                        <div className="flex gap-3"><span className={cn("grid h-9 w-9 shrink-0 place-items-center rounded-xl border", deliveryMethod === "standard" ? "border-autox-red/40 bg-autox-red/10 text-autox-red" : "border-autox-border text-autox-gray")}><Truck size={17} /></span><div><p className="text-sm font-bold text-white">Standard Delivery</p><p className="mt-1 text-[11px] leading-5 text-autox-gray">Reliable islandwide delivery.</p></div></div>
+                        <div className="flex gap-3"><span className={cn("grid h-9 w-9 shrink-0 place-items-center rounded-xl border", deliveryMethod === "standard" ? "border-autox-red/40 bg-autox-red/10 text-autox-red" : "border-autox-border text-autox-gray")}><Truck size={17} /></span><div><p className="text-sm font-bold text-white">Standard Delivery</p><p className="mt-1 text-[11px] leading-5 text-autox-gray">{districtKnown ? `${isColombo ? "Colombo" : "Outside Colombo"} · reliable delivery.` : "Enter district to confirm regional fee."}</p></div></div>
                         {deliveryMethod === "standard" && <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-autox-red text-white"><Check size={12} strokeWidth={3} /></span>}
                       </div>
                       <p className="mt-4 text-sm font-extrabold text-white">{formatPrice(standardDelivery)}</p>
@@ -426,10 +432,10 @@ export default function CartPage() {
                     {shipping.expressEnabled && (
                       <button type="button" onClick={() => setDeliveryMethod("express")} className={cn("relative rounded-xl border p-4 text-left transition-all", deliveryMethod === "express" ? "border-autox-red bg-autox-red/[0.07]" : "border-autox-border bg-autox-panel3 hover:border-autox-gray/70")}>
                         <div className="flex items-start justify-between gap-4">
-                          <div className="flex gap-3"><span className={cn("grid h-9 w-9 shrink-0 place-items-center rounded-xl border", deliveryMethod === "express" ? "border-autox-red/40 bg-autox-red/10 text-autox-red" : "border-autox-border text-autox-gray")}><Zap size={17} /></span><div><p className="text-sm font-bold text-white">Express Delivery</p><p className="mt-1 text-[11px] leading-5 text-autox-gray">Standard delivery + express priority fee.</p></div></div>
+                          <div className="flex gap-3"><span className={cn("grid h-9 w-9 shrink-0 place-items-center rounded-xl border", deliveryMethod === "express" ? "border-autox-red/40 bg-autox-red/10 text-autox-red" : "border-autox-border text-autox-gray")}><Zap size={17} /></span><div><p className="text-sm font-bold text-white">Express Delivery</p><p className="mt-1 text-[11px] leading-5 text-autox-gray">{districtKnown ? `${isColombo ? "Colombo" : "Outside Colombo"} · standard + priority fee.` : "Enter district to confirm express fee."}</p></div></div>
                           {deliveryMethod === "express" && <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-autox-red text-white"><Check size={12} strokeWidth={3} /></span>}
                         </div>
-                        <p className="mt-4 text-sm font-extrabold text-white">{formatPrice(standardDelivery + shipping.expressDeliveryFee)}</p>
+                        <p className="mt-4 text-sm font-extrabold text-white">{formatPrice(standardDelivery + regionalExpressExtra)}</p>
                       </button>
                     )}
                   </div>

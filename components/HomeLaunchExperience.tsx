@@ -94,7 +94,7 @@ export function HomeLaunchExperience({ children }: { children: ReactNode }) {
                   width={1254}
                   height={1254}
                   priority
-                  sizes="(max-width: 520px) 70vw, 310px"
+                  sizes="(max-width: 520px) 55vw, 250px"
                   className={styles.bike}
                 />
               </div>

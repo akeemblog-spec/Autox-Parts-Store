@@ -37,8 +37,9 @@ export async function POST(req: NextRequest) {
   const { address: addressInput, paymentMethod, deliveryMethod, couponCode } = parsed.data;
   if (!(await isPaymentMethodEnabled(paymentMethod))) return NextResponse.json({ error: "This payment method isn't currently available. Please choose another." }, { status: 400 });
   const storeSettings = await getStorefrontSettings();
-  const configuredDeliveryFee = Math.max(0, Number(storeSettings.delivery_fee ?? 500) || 0);
-  const configuredExpressFee = Math.max(0, Number(storeSettings.express_delivery_fee ?? 750) || 0);
+  const isColombo = addressInput.district.trim().toLowerCase().includes("colombo");
+  const configuredDeliveryFee = Math.max(0, Number(isColombo ? (storeSettings.delivery_fee_colombo ?? storeSettings.delivery_fee ?? 500) : (storeSettings.delivery_fee_outside_colombo ?? 850)) || 0);
+  const configuredExpressFee = Math.max(0, Number(isColombo ? (storeSettings.express_delivery_fee_colombo ?? 250) : (storeSettings.express_delivery_fee_outside_colombo ?? 450)) || 0);
   const expressEnabled = (storeSettings.express_delivery_enabled ?? "true") === "true";
   if (deliveryMethod === "express" && !expressEnabled) return NextResponse.json({ error: "Express delivery is currently unavailable." }, { status: 400 });
 

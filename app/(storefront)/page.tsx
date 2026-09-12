@@ -20,7 +20,7 @@ export default async function HomePage() {
   const bikeBrands = allBrands.filter((b) => b.vehicleType === "bike");
   const threeWheelerBrands = allBrands.filter((b) => b.vehicleType === "three-wheeler");
   const promoFallback = [
-    { id: "installment", title: "EASY INSTALLMENT PLANS", description: "Own the parts you need today, pay in easy monthly installments.", image: "/images/promo/installment-wheel.svg", ctaLabel: "Learn More", ctaHref: "/offers", active: true, sortOrder: 0 },
+    { id: "installment", title: "EASY INSTALLMENT PLANS", description: "Own the parts you need today, pay in easy monthly installments.", image: "/images/promo/installment-wheel.svg", ctaLabel: "Learn More", ctaHref: "/installments", active: true, sortOrder: 0 },
     { id: "genuine", title: "GENUINE PARTS. TRUSTED QUALITY.", description: "Explore our wide range of 100% genuine parts with warranty.", image: "/images/promo/genuine-parts.svg", ctaLabel: "Shop Now", ctaHref: "/products", active: true, sortOrder: 1 },
   ];
   const promo = banners.length ? banners : promoFallback;
