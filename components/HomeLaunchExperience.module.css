@@ -1,0 +1,260 @@
+.loader {
+  --loader-red: #ed1c24;
+  --loader-red-soft: rgba(237, 28, 36, .52);
+  --loader-ink: #050506;
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 44%, rgba(237, 28, 36, .085), transparent 22rem),
+    radial-gradient(circle at 50% 100%, rgba(237, 28, 36, .08), transparent 32rem),
+    #000;
+  transition: opacity .62s cubic-bezier(.22,1,.36,1), visibility .62s ease;
+}
+.loaderLeaving { opacity: 0; visibility: hidden; pointer-events: none; }
+
+.grid {
+  position: absolute;
+  inset: 0;
+  opacity: .18;
+  background-image:
+    linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px);
+  background-size: 54px 54px;
+  -webkit-mask-image: radial-gradient(circle at 50% 50%, #000 0 24%, transparent 70%);
+  mask-image: radial-gradient(circle at 50% 50%, #000 0 24%, transparent 70%);
+}
+.vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, transparent 26%, rgba(0,0,0,.16) 54%, rgba(0,0,0,.86) 100%);
+  pointer-events: none;
+}
+.scene {
+  position: relative;
+  display: flex;
+  width: min(92vw, 560px);
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(8px) scale(.94);
+  animation: sceneIn .78s cubic-bezier(.16,1,.3,1) .06s forwards;
+}
+.ringWrap {
+  position: relative;
+  display: grid;
+  width: min(35vw, 350px);
+  height: min(35vw, 350px);
+  place-items: center;
+  isolation: isolate;
+}
+.ambientGlow {
+  position: absolute;
+  inset: 14%;
+  z-index: -2;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(237,28,36,.18), rgba(237,28,36,.05) 42%, transparent 70%);
+  filter: blur(16px);
+  animation: ambientPulse 2.7s ease-in-out infinite;
+}
+.ring,
+.ringReverse,
+.ringFine {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform-origin: 50% 50%;
+}
+.ring { animation: ringSpin 9s linear infinite; }
+.ringReverse { inset: 7%; width: 86%; height: 86%; animation: ringSpinReverse 13s linear infinite; opacity: .58; }
+.ringFine { inset: 14%; width: 72%; height: 72%; animation: ringSpin 18s linear infinite; opacity: .34; }
+.ringGlow {
+  filter: drop-shadow(0 0 5px var(--loader-red)) drop-shadow(0 0 17px rgba(237,28,36,.48));
+  animation: ringGlow 2.6s ease-in-out infinite;
+}
+.orbitDot {
+  position: absolute;
+  top: 7.5%;
+  left: 50%;
+  z-index: 3;
+  width: 5px;
+  height: 5px;
+  margin-left: -2.5px;
+  border-radius: 9999px;
+  background: #ff3c45;
+  box-shadow: 0 0 10px #ed1c24, 0 0 24px rgba(237,28,36,.8);
+  animation: orbitPulse 1.8s ease-in-out infinite;
+}
+.bikeHolder {
+  position: relative;
+  z-index: 4;
+  display: grid;
+  width: 88%;
+  place-items: center;
+  animation: bikeBob 3.2s ease-in-out infinite;
+}
+.bikeHolder::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: 13%;
+  z-index: -1;
+  width: 72%;
+  height: 8%;
+  transform: translateX(-50%);
+  border-radius: 9999px;
+  background: radial-gradient(ellipse at center, rgba(237,28,36,.72), rgba(237,28,36,.22) 35%, transparent 72%);
+  filter: blur(8px);
+  animation: reflect 3.2s ease-in-out infinite;
+}
+.bike {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 14px 24px rgba(0,0,0,.68)) drop-shadow(0 6px 16px rgba(237,28,36,.18));
+  transform: scale(1.12);
+  transform-origin: center;
+}
+.speedLine {
+  position: absolute;
+  left: 7%;
+  z-index: 2;
+  height: 1px;
+  border-radius: 9999px;
+  background: linear-gradient(90deg, transparent, rgba(237,28,36,.82));
+  opacity: 0;
+  animation: speedLine 2.4s ease-in-out infinite;
+}
+.speedLineOne { top: 46%; width: 18%; animation-delay: .1s; }
+.speedLineTwo { top: 54%; width: 13%; animation-delay: .55s; }
+.speedLineThree { top: 61%; width: 9%; animation-delay: 1.05s; }
+.particles { position: absolute; inset: 0; pointer-events: none; }
+.spark {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 9999px;
+  background: var(--loader-red);
+  box-shadow: 0 0 7px var(--loader-red);
+  opacity: 0;
+  animation: spark 3s ease-in infinite;
+}
+.wordmark {
+  margin-top: 9px;
+  color: #fff;
+  font-size: clamp(28px, 4vw, 37px);
+  font-weight: 950;
+  letter-spacing: -.045em;
+  line-height: 1;
+  user-select: none;
+}
+.wordmark span { color: var(--loader-red); }
+.tagline {
+  margin-top: 8px;
+  color: #8b8b91;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: .42em;
+  text-transform: uppercase;
+}
+.progressRow {
+  display: flex;
+  width: min(58vw, 232px);
+  align-items: center;
+  gap: 11px;
+  margin-top: 27px;
+}
+.barTrack {
+  position: relative;
+  height: 3px;
+  flex: 1;
+  overflow: hidden;
+  border-radius: 9999px;
+  background: #1b1b1f;
+}
+.barTrack::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.08), transparent);
+  transform: translateX(-100%);
+  animation: trackShimmer 1.7s ease-in-out infinite;
+}
+.barFill {
+  display: block;
+  height: 100%;
+  width: 100%;
+  transform: scaleX(0);
+  transform-origin: left center;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #a80b12, #ed1c24 45%, #ff555d);
+  box-shadow: 0 0 9px rgba(237,28,36,.78);
+  animation: loadProgress 2.05s cubic-bezier(.22,.8,.32,1) .16s forwards;
+}
+.percent {
+  min-width: 31px;
+  color: #737379;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-align: right;
+}
+.caption {
+  margin-top: 14px;
+  color: #696970;
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: .3em;
+  text-transform: uppercase;
+}
+.captionDot {
+  display: inline-block;
+  width: 4px;
+  height: 4px;
+  margin: 0 7px 2px 0;
+  border-radius: 9999px;
+  background: var(--loader-red);
+  box-shadow: 0 0 8px var(--loader-red);
+  animation: dotPulse 1.2s ease-in-out infinite;
+}
+.content {
+  transition: opacity .75s cubic-bezier(.22,1,.36,1), transform .75s cubic-bezier(.22,1,.36,1), filter .75s ease;
+}
+.contentHidden { opacity: 0; transform: translateY(12px) scale(.995); filter: blur(4px); }
+.contentReady { opacity: 1; transform: none; filter: none; }
+
+@keyframes sceneIn { to { opacity: 1; transform: none; } }
+@keyframes ringSpin { to { transform: rotate(360deg); } }
+@keyframes ringSpinReverse { to { transform: rotate(-360deg); } }
+@keyframes orbitPulse { 50% { opacity:.38; transform:scale(.72); } }
+@keyframes ringGlow {
+  0%,100% { filter: drop-shadow(0 0 4px var(--loader-red)) drop-shadow(0 0 10px rgba(237,28,36,.42)); }
+  50% { filter: drop-shadow(0 0 9px var(--loader-red)) drop-shadow(0 0 22px rgba(237,28,36,.72)); }
+}
+@keyframes ambientPulse { 0%,100% { opacity:.7; transform:scale(.96); } 50% { opacity:1; transform:scale(1.04); } }
+@keyframes bikeBob { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-7px) scale(1.012); } }
+@keyframes reflect { 0%,100% { opacity:.58; transform:translateX(-50%) scaleX(1); } 50% { opacity:.3; transform:translateX(-50%) scaleX(.84); } }
+@keyframes spark { 0% { opacity:0; transform:translate(0,0) scale(1); } 14% { opacity:1; } 100% { opacity:0; transform:translate(var(--dx),var(--dy)) scale(.25); } }
+@keyframes speedLine { 0%,100% { opacity:0; transform:translateX(-12px) scaleX(.45); } 25% { opacity:.55; } 60% { opacity:.08; transform:translateX(28px) scaleX(1); } }
+@keyframes trackShimmer { 55%,100% { transform: translateX(100%); } }
+@keyframes loadProgress { 0% { transform:scaleX(.03); } 38% { transform:scaleX(.42); } 70% { transform:scaleX(.74); } 100% { transform:scaleX(1); } }
+@keyframes dotPulse { 50% { opacity:.38; transform:scale(.7); } }
+
+@media (max-width: 520px) {
+  .scene { width: 94vw; }
+  .ringWrap { width: min(80vw, 340px); height: min(80vw, 340px); }
+  .wordmark { margin-top: 5px; }
+  .progressRow { width: min(62vw, 224px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scene { opacity:1; transform:none; animation:none; }
+  .ring, .ringReverse, .ringFine, .ringGlow, .orbitDot, .ambientGlow, .bikeHolder, .speedLine, .spark, .barTrack::after, .captionDot { animation:none !important; }
+  .barFill { animation:none; transform:scaleX(1); }
+  .loader, .content { transition-duration:.01ms; }
+}
