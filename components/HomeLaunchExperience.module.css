@@ -94,7 +94,7 @@
   position: relative;
   z-index: 4;
   display: grid;
-  width: 88%;
+  width: 65%;
   place-items: center;
   animation: bikeBob 3.2s ease-in-out infinite;
 }
