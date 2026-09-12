@@ -89,7 +89,7 @@ export function HomeLaunchExperience({ children }: { children: ReactNode }) {
 
               <div className={styles.bikeHolder}>
                 <Image
-                  src="/images/ui/loader-ui.webp"
+                  src="/images/ui/autox-loader-bike.webp"
                   alt=""
                   width={1254}
                   height={1254}

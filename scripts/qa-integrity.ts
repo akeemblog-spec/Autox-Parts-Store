@@ -191,7 +191,7 @@ expect(text("app/(storefront)/cart/page.tsx").includes("outsideColomboStandardDe
 expect(text("components/admin/AdminGeneralSettings.tsx").includes("Regional Shipping Settings"), "regional shipping fees are admin configurable");
 expect(text("components/pages/BrandPageServer.tsx").includes("Popular {brand.name} models") && text("app/(storefront)/brands/honda/page.tsx").includes("BrandPageServer"), "all brand detail pages share the polished brand layout");
 expect(text("components/HomeLaunchExperience.module.css").includes("width: 65%"), "home launcher bike uses requested 65% width");
-expect(text("components/HomeLaunchExperience.tsx").includes("/images/ui/loader-ui.webp") && existsSync(join(root, "public/images/ui/loader-ui.webp")), "home launcher uses optimized WebP bike asset");
+expect(text("components/HomeLaunchExperience.tsx").includes("/images/ui/autox-loader-bike.webp") && existsSync(join(root, "public/images/ui/autox-loader-bike.webp")), "home launcher uses optimized WebP bike asset");
 
 if (failed) {
   console.error(`\n${failed} integrity check(s) failed.`);
