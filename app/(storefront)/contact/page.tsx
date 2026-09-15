@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { Phone, Mail, MapPin } from "lucide-react";
-import { Breadcrumb } from "@/components/Breadcrumb";
+import { Phone, Mail, MapPin, Headphones } from "lucide-react";
+import { StandardPageHero } from "@/components/content/StandardPageHero";
 import { ContactForm } from "@/components/contact/ContactForm";
 
 export const metadata: Metadata = {
@@ -16,16 +16,10 @@ export default function ContactPage() {
       
 
       <main>
-        <div className="mx-auto max-w-[1600px] px-4 lg:px-6">
-          <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Contact" }]} />
-        </div>
+        <StandardPageHero eyebrow="Contact" title="Get in touch." accent="We’re here to help." description="Questions about a part, fitment, delivery or an order? Contact the AutoX support team." icon={Headphones} showHelp={false}/>
 
-        <section className="mx-auto max-w-[1600px] px-4 lg:px-6 py-6 pb-14 grid lg:grid-cols-[1fr_1.4fr] gap-8">
+        <section className="mx-auto grid max-w-[1200px] gap-8 px-4 py-10 lg:grid-cols-[1fr_1.4fr] lg:px-6 lg:py-14">
           <div>
-            <h1 className="text-2xl font-extrabold text-white mb-2">Get in Touch</h1>
-            <p className="text-autox-gray text-sm mb-6">
-              Have a question about a part, an order, or a fitment? We&apos;re here to help.
-            </p>
             <div className="space-y-4">
               <div className="flex items-center gap-3 bg-autox-panel border border-autox-border rounded-2xl p-4">
                 <Phone size={18} className="text-autox-red" />

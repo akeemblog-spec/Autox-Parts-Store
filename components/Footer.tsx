@@ -7,8 +7,8 @@ import {
   Instagram,
   Youtube,
   Music2,
-  MessageCircle,
 } from "lucide-react";
+import { WhatsAppIcon } from "@/components/icons/WhatsAppIcon";
 import { getCachedFooter, loadFooterPayload } from "@/lib/client/storefront-cache";
 
 const quickLinks = [
@@ -84,7 +84,7 @@ export function Footer() {
         { key: "social_instagram", label: "Instagram", icon: Instagram },
         { key: "social_youtube", label: "YouTube", icon: Youtube },
         { key: "social_tiktok", label: "TikTok", icon: Music2 },
-        { key: "social_whatsapp", label: "WhatsApp", icon: MessageCircle },
+        { key: "social_whatsapp", label: "WhatsApp", icon: WhatsAppIcon },
         { key: "social_x", label: "X", icon: Music2 },
       ].filter((item) => Boolean(settings[item.key])),
     [settings],
@@ -115,9 +115,9 @@ export function Footer() {
                   target="_blank"
                   rel="noreferrer"
                   aria-label={label}
-                  className="flex h-8 w-8 items-center justify-center rounded-full border border-autox-border text-autox-gray transition-colors hover:border-autox-red hover:text-autox-red"
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-autox-border text-autox-gray transition-colors hover:border-autox-red hover:text-autox-red"
                 >
-                  <Icon size={14} />
+                  <Icon size={18} />
                 </a>
               ))}
             </div>
@@ -182,30 +182,22 @@ export function Footer() {
           </ul>
         </div>
 
-        <div className="col-span-2 lg:col-span-1">
+        <div>
           <h3 className="mb-4 text-xs font-bold uppercase tracking-wide text-white">
-            Customer Support
+            Customer Care
           </h3>
-          <p className="mb-4 text-xs leading-5 text-autox-gray">
-            Need help with fitment, delivery or an order? Use the support links below.
-          </p>
-          <div className="mt-6">
-            <h4 className="mb-2 text-xs font-bold uppercase tracking-wide text-white">
-              Customer Care
-            </h4>
-            <ul className="space-y-1.5">
+          <ul className="space-y-2.5">
               {customerCareLinks.map((link) => (
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    className="text-xs text-autox-gray hover:text-autox-red"
+                    className="text-sm text-autox-gray hover:text-autox-red"
                   >
                     {link.label}
                   </Link>
                 </li>
               ))}
-            </ul>
-          </div>
+          </ul>
         </div>
       </div>
 

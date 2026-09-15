@@ -35,6 +35,11 @@ body {
   outline-offset: 2px;
 }
 
+/* The search form shows focus on its outer edge; avoid a clipped outline around its inner controls. */
+.autox-search-control:focus-visible {
+  outline: none;
+}
+
 .line-clamp-2 {
   display: -webkit-box;
   -webkit-line-clamp: 2;

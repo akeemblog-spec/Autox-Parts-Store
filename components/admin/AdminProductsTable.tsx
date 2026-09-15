@@ -68,7 +68,7 @@ export function AdminProductsTable({ initialProducts }: { initialProducts: Admin
 
     setItems((prev) => prev.map((p) => (p.id === id ? { ...p, price, stock } : p)));
     setEditingId(null);
-    toast("Product deleted.", "success");
+    toast("Product updated.", "success");
     router.refresh();
   };
 
@@ -86,6 +86,7 @@ export function AdminProductsTable({ initialProducts }: { initialProducts: Admin
     }
 
     setItems((prev) => prev.filter((p) => p.id !== id));
+    toast("Product deleted.", "success");
     router.refresh();
   };
 

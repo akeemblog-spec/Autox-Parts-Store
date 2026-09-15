@@ -1,9 +1,9 @@
 "use client";
 
 import { createContext, useCallback, useContext, useMemo, useRef, useState } from "react";
-import { AlertTriangle, CheckCircle2, Info, X } from "lucide-react";
+import { AlertTriangle, CheckCircle2, Info, X, TriangleAlert } from "lucide-react";
 
-type ToastTone = "success" | "error" | "info";
+type ToastTone = "success" | "error" | "info" | "warning";
 type ConfirmOptions = { title: string; description?: string; confirmLabel?: string; cancelLabel?: string; destructive?: boolean };
 type PromptOptions = { title: string; description?: string; label?: string; placeholder?: string; defaultValue?: string; confirmLabel?: string; inputMode?: "text" | "number" | "textarea" };
 type Resolver<T> = (value: T) => void;
@@ -79,7 +79,7 @@ export function AppUIProvider({ children }: { children: React.ReactNode }) {
         <div className="flex justify-end gap-3 border-t border-autox-border p-4"><button onClick={() => closePrompt(null)} className="rounded-xl border border-autox-border px-4 py-2 text-sm font-semibold text-autox-gray hover:text-white">Cancel</button><button onClick={() => closePrompt(promptValue.trim() || null)} className="rounded-xl bg-autox-red px-4 py-2 text-sm font-bold text-white hover:bg-autox-redDark">{promptState.confirmLabel ?? "Continue"}</button></div>
       </div>
     </div>}
-    <div className="pointer-events-none fixed bottom-[calc(6.8rem+env(safe-area-inset-bottom))] right-3 z-[350] flex w-[min(92vw,360px)] flex-col gap-2 lg:bottom-5 lg:right-5">{toasts.map((item) => <div key={item.id} className={`pointer-events-auto flex items-start gap-3 rounded-2xl border bg-[#101010] p-3 shadow-2xl ${item.tone === "error" ? "border-autox-red/40" : item.tone === "success" ? "border-emerald-400/30" : "border-autox-border"}`}>{item.tone === "success" ? <CheckCircle2 size={17} className="mt-0.5 shrink-0 text-emerald-400"/> : item.tone === "error" ? <AlertTriangle size={17} className="mt-0.5 shrink-0 text-autox-red"/> : <Info size={17} className="mt-0.5 shrink-0 text-autox-gray"/>}<p className="flex-1 text-sm leading-5 text-white">{item.message}</p><button aria-label="Dismiss notification" onClick={() => setToasts((prev) => prev.filter((x) => x.id !== item.id))} className="text-autox-gray hover:text-white"><X size={15}/></button></div>)}</div>
+    <div className="pointer-events-none fixed bottom-[calc(6.8rem+env(safe-area-inset-bottom))] right-3 z-[350] flex w-[min(92vw,380px)] flex-col gap-2 lg:bottom-5 lg:right-5">{toasts.map((item) => <div key={item.id} className={`pointer-events-auto relative overflow-hidden rounded-2xl border bg-[#0b0b0c]/95 p-4 shadow-[0_18px_55px_rgba(0,0,0,.55)] backdrop-blur-xl ${item.tone === "error" ? "border-autox-red/35" : item.tone === "success" ? "border-emerald-400/25" : item.tone === "warning" ? "border-amber-400/25" : "border-white/10"}`}><span className={`absolute inset-y-0 left-0 w-1 ${item.tone === "success" ? "bg-emerald-400" : item.tone === "warning" ? "bg-amber-400" : item.tone === "error" ? "bg-autox-red" : "bg-white/30"}`}/><div className="flex items-start gap-3">{item.tone === "success" ? <CheckCircle2 size={18} className="mt-0.5 shrink-0 text-emerald-400"/> : item.tone === "error" ? <AlertTriangle size={18} className="mt-0.5 shrink-0 text-autox-red"/> : item.tone === "warning" ? <TriangleAlert size={18} className="mt-0.5 shrink-0 text-amber-400"/> : <Info size={18} className="mt-0.5 shrink-0 text-autox-gray"/>}<div className="min-w-0 flex-1"><p className="text-[10px] font-black uppercase tracking-[.18em] text-autox-gray">{item.tone === "success" ? "Success" : item.tone === "error" ? "Action failed" : item.tone === "warning" ? "Attention" : "AutoX Admin"}</p><p className="mt-1 text-sm leading-5 text-white">{item.message}</p></div><button aria-label="Dismiss notification" onClick={() => setToasts((prev) => prev.filter((x) => x.id !== item.id))} className="text-autox-gray transition hover:text-white"><X size={15}/></button></div></div>)}</div>
   </AppUIContext.Provider>;
 }
 

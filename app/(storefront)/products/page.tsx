@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Breadcrumb } from "@/components/Breadcrumb";
+import { StandardPageHero } from "@/components/content/StandardPageHero";
+import { PackageSearch } from "lucide-react";
 import { LiveProductGrid } from "@/components/LiveProductGrid";
 import { getAllCategories } from "@/lib/db-queries/products";
 
@@ -22,14 +23,7 @@ export default async function AllProductsPage({ searchParams }: { searchParams: 
       
 
       <main>
-        <div className="mx-auto max-w-[1600px] px-4 lg:px-6">
-          <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "All Products" }]} />
-        </div>
-
-        <section className="mx-auto max-w-[1600px] px-4 lg:px-6 pb-4">
-          <h1 className="text-2xl font-extrabold text-white">All Parts</h1>
-          <p className="text-autox-gray text-sm mt-1">Browse our full catalog of genuine and aftermarket parts.</p>
-        </section>
+        <StandardPageHero eyebrow="All Parts" title="Every part." accent="One AutoX catalog." description="Browse genuine and aftermarket motorcycle and three-wheeler parts with filters built to get you to the right fit faster." icon={PackageSearch}/>
 
         <section className="mx-auto max-w-[1600px] px-4 lg:px-6 py-6">
           <LiveProductGrid showPartTypeFilter categoryOptions={categoryOptions} searchQuery={params.q} categorySlug={params.category} brandSlug={params.brand} vehicleType={params.vehicleType} model={params.model} year={params.year} />

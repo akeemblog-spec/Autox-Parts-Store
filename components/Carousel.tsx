@@ -19,7 +19,7 @@ export function Carousel({ children }: { children: React.ReactNode }) {
       >
         <ChevronLeft size={18} />
       </button>
-      <div ref={ref} className="flex gap-4 overflow-x-auto scroll-smooth snap-x pb-1 [&::-webkit-scrollbar]:hidden">
+      <div ref={ref} className="flex gap-4 overflow-x-auto scroll-smooth snap-x pb-5 pt-3 [&::-webkit-scrollbar]:hidden">
         {children}
       </div>
       <button

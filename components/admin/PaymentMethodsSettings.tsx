@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { CreditCard, Truck, Wallet, Zap } from "lucide-react";
 import { cn } from "@/lib/utils/cn";
+import { useAppUI } from "@/components/ui/AppUIProvider";
 
 interface PaymentMethodRow {
   id: string;
@@ -24,6 +25,7 @@ const icons: Record<string, React.ElementType> = {
 
 export function PaymentMethodsSettings({ initialMethods }: { initialMethods: PaymentMethodRow[] }) {
   const router = useRouter();
+  const {toast}=useAppUI();
   const [methods, setMethods] = useState(initialMethods);
   const [busyId, setBusyId] = useState<string | null>(null);
 
@@ -42,9 +44,11 @@ export function PaymentMethodsSettings({ initialMethods }: { initialMethods: Pay
     if (!res.ok) {
       // Revert on failure
       setMethods((prev) => prev.map((m) => (m.id === id ? { ...m, enabled: current } : m)));
+      toast("Unable to update payment method.","error");
       return;
     }
 
+    toast(current ? "Payment method disabled." : "Payment method enabled.","success");
     router.refresh();
   };
 

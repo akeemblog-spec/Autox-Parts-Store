@@ -70,7 +70,7 @@ export function SearchBar({ mobile = false, onNavigate, autoFocus = false }: { m
       <form
         role="search"
         onSubmit={(e) => { e.preventDefault(); submit(); }}
-        className={cn("flex items-stretch overflow-hidden rounded-xl border border-autox-border transition-colors focus-within:border-autox-red", mobile ? "h-10" : "h-11")}
+        className={cn("flex items-stretch overflow-hidden rounded-xl border border-autox-border transition-colors focus-within:border-autox-red focus-within:ring-2 focus-within:ring-autox-red/35 focus-within:ring-offset-2 focus-within:ring-offset-black", mobile ? "h-10" : "h-11")}
       >
         <label htmlFor={mobile ? "mobile-site-search" : "site-search"} className="sr-only">Search for parts, brands, categories or models</label>
         <input
@@ -82,18 +82,18 @@ export function SearchBar({ mobile = false, onNavigate, autoFocus = false }: { m
           placeholder="Search parts, brands, models..."
           autoComplete="off"
           autoFocus={autoFocus}
-          className="min-w-0 flex-1 bg-autox-panel2 px-3 md:px-4 text-sm text-white outline-none placeholder:text-autox-gray"
+          className="autox-search-control min-w-0 flex-1 bg-autox-panel2 px-3 md:px-4 text-sm text-white outline-none placeholder:text-autox-gray"
         />
         {!mobile && (
           <div className="relative hidden items-center border-l border-autox-border bg-autox-panel3 lg:flex">
-            <select aria-label="Select category to search within" value={category} onChange={(e) => setCategory(e.target.value)} className="h-full appearance-none bg-transparent pl-3 pr-7 text-xs text-autox-gray outline-none">
+            <select aria-label="Select category to search within" value={category} onChange={(e) => setCategory(e.target.value)} className="autox-search-control h-full appearance-none bg-transparent pl-3 pr-7 text-xs text-autox-gray outline-none">
               <option value="all">All Categories</option>
               {categories.map((c) => <option key={c.value} value={c.value} className="bg-autox-panel2">{c.label}</option>)}
             </select>
             <ChevronDown size={13} className="pointer-events-none absolute right-2.5 text-autox-gray" />
           </div>
         )}
-        <button type="submit" aria-label="Search" disabled={query.trim().length < 3} className="flex w-11 md:w-12 items-center justify-center bg-autox-red text-white transition-colors hover:bg-autox-redDark disabled:cursor-not-allowed disabled:opacity-50"><Search size={18} /></button>
+        <button type="submit" aria-label="Search" disabled={query.trim().length < 3} className="autox-search-control flex w-11 md:w-12 items-center justify-center bg-autox-red text-white transition-colors hover:bg-autox-redDark disabled:cursor-not-allowed disabled:bg-autox-red/70"><Search size={18} /></button>
       </form>
 
       {open && query.trim().length >= 3 && (
