@@ -99,15 +99,3 @@ export const trustFeatures: TrustFeature[] = [
   { id: "trust-payments", icon: "Lock", title: "Secure Payments", description: "100% Safe & Secure" },
   { id: "trust-support", icon: "Headset", title: "Expert Support", description: "24/7 Customer Service" },
 ];
-
-export const heroSlides = [
-  {
-    id: "slide-1",
-    eyebrow: "",
-    headline: "Genuine Parts.",
-    headlineAccent: "Peak Performance.",
-    description:
-      "High quality motorcycle and three wheeler parts for every ride. Built to perform. Built to last.",
-    image: "/images/hero/hero-bike-1.svg",
-  },
-];

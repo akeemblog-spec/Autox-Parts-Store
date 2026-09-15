@@ -159,8 +159,9 @@ checkout validation are already wired to respect it.
 3. Run migrations against that database once, from your machine:
    ```bash
    DATABASE_URL="<your-connection-string>" npm run db:migrate
-   DATABASE_URL="<your-connection-string>" npm run db:seed
    ```
+   Seed only a new development database with the explicit opt-in described
+   above. Do not seed an existing populated or production database.
 4. Import the repo in [Vercel](https://vercel.com/new). It auto-detects
    Next.js.
 5. Set environment variables in the Vercel project settings:
@@ -173,22 +174,17 @@ checkout validation are already wired to respect it.
 
 ### After deploying
 
-- Log in with the seeded admin account and **change the password** (there's
-  no self-service password change UI yet — update it directly via
-  `UPDATE users SET password_hash = ... WHERE email = ...` using a fresh
-  bcrypt hash, or add a password-change page).
+- For an existing installation, follow
+  `SECURITY_MFA_ADMIN_IMPLEMENTATION.md` for Super Admin promotion and MFA.
 - Review `/admin/settings` and confirm only the payment methods you're
   ready to accept are enabled.
 
-## Known gaps (by design, for this phase)
+## Current setup notes
 
-- No rate limiting on API routes.
-- No webhook signature verification (needed once Koko/Mintpay are wired up
-  for real).
-- No email verification or password reset flow.
-- Checkout uses a hardcoded demo address rather than a real address form —
-  the `addresses` table and API support real addresses, the UI just
-  doesn't collect one yet.
-- Images are placeholder SVGs generated locally; swap `lib/data/*.ts` image
-  paths (or the DB rows they seed) for real hosted asset URLs
-  (Cloudinary, Vercel Blob, etc.) before going live.
+- Email verification, password reset and mandatory Admin MFA are implemented;
+  see `DELIVERY_AUTH_SUPER_ADMIN_UPDATE.md` and
+  `SECURITY_MFA_ADMIN_IMPLEMENTATION.md` for setup and migration details.
+- Real Koko/Mintpay payments still require merchant credentials and a signed
+  webhook flow before those payment methods can be enabled.
+- The homepage Hero uses fixed responsive WebP garage artwork; Admin storefront
+  slides control the live text and action links.

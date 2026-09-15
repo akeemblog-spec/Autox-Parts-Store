@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   Facebook,
   Instagram,
@@ -54,6 +55,8 @@ type FooterPayload = {
 const fallbackPayload: FooterPayload = { bikeBrands: [], threeWheelerBrands: [], allBrands: [], settings: {} };
 
 export function Footer() {
+  const pathname = usePathname();
+  const isActive = (href: string) => pathname === href || (href !== "/" && pathname.startsWith(`${href}/`));
   const [payload, setPayload] = useState<FooterPayload>(() => (getCachedFooter() as FooterPayload | null) ?? fallbackPayload);
 
   useEffect(() => {
@@ -133,7 +136,8 @@ export function Footer() {
               <li key={link.label}>
                 <Link
                   href={link.href}
-                  className="text-sm text-autox-gray hover:text-autox-red"
+                  aria-current={pathname === link.href ? "page" : undefined}
+                  className={isActive(link.href) ? "text-sm font-semibold text-autox-red underline decoration-autox-red/70 underline-offset-4" : "text-sm text-autox-gray hover:text-autox-red"}
                 >
                   {link.label}
                 </Link>
@@ -151,7 +155,8 @@ export function Footer() {
               <li key={link.label}>
                 <Link
                   href={link.href}
-                  className="text-sm text-autox-gray hover:text-autox-red"
+                  aria-current={pathname === link.href ? "page" : undefined}
+                  className={isActive(link.href) ? "text-sm font-semibold text-autox-red underline decoration-autox-red/70 underline-offset-4" : "text-sm text-autox-gray hover:text-autox-red"}
                 >
                   {link.label}
                 </Link>
@@ -170,7 +175,8 @@ export function Footer() {
                 <li key={brand.id}>
                   <Link
                     href={`/brands/${brand.slug}`}
-                    className="text-sm text-autox-gray hover:text-autox-red"
+                    aria-current={pathname === `/brands/${brand.slug}` ? "page" : undefined}
+                    className={isActive(`/brands/${brand.slug}`) ? "text-sm font-semibold text-autox-red underline decoration-autox-red/70 underline-offset-4" : "text-sm text-autox-gray hover:text-autox-red"}
                   >
                     {brand.name}
                   </Link>
@@ -191,7 +197,8 @@ export function Footer() {
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    className="text-sm text-autox-gray hover:text-autox-red"
+                    aria-current={pathname === link.href ? "page" : undefined}
+                    className={isActive(link.href) ? "text-sm font-semibold text-autox-red underline decoration-autox-red/70 underline-offset-4" : "text-sm text-autox-gray hover:text-autox-red"}
                   >
                     {link.label}
                   </Link>
