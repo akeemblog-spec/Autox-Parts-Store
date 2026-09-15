@@ -15,7 +15,7 @@ export function Carousel({ children }: { children: React.ReactNode }) {
       <button
         aria-label="Scroll left"
         onClick={() => scroll(-1)}
-        className="hidden lg:flex absolute -left-4 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-autox-panel2 border border-autox-border items-center justify-center text-white opacity-0 group-hover/carousel:opacity-100 transition-opacity hover:border-autox-red"
+        className="hidden lg:flex absolute -left-4 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-autox-panel2 border border-autox-border items-center justify-center text-white opacity-0 group-hover/carousel:opacity-100 transition-[opacity,border-color,box-shadow] hover:border-autox-red hover:shadow-[0_0_16px_rgba(237,28,36,.4)]"
       >
         <ChevronLeft size={18} />
       </button>
@@ -25,7 +25,7 @@ export function Carousel({ children }: { children: React.ReactNode }) {
       <button
         aria-label="Scroll right"
         onClick={() => scroll(1)}
-        className="hidden lg:flex absolute -right-4 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-autox-panel2 border border-autox-border items-center justify-center text-white opacity-0 group-hover/carousel:opacity-100 transition-opacity hover:border-autox-red"
+        className="hidden lg:flex absolute -right-4 top-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-autox-panel2 border border-autox-border items-center justify-center text-white opacity-0 group-hover/carousel:opacity-100 transition-[opacity,border-color,box-shadow] hover:border-autox-red hover:shadow-[0_0_16px_rgba(237,28,36,.4)]"
       >
         <ChevronRight size={18} />
       </button>

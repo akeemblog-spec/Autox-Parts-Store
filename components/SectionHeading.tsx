@@ -19,7 +19,7 @@ export function SectionHeading({ title, accent, viewAllHref, viewAllLabel = "Vie
           href={viewAllHref}
           className="flex items-center gap-1 text-xs font-semibold text-autox-red hover:underline shrink-0"
         >
-          {viewAllLabel} <ArrowRight size={13} />
+          {viewAllLabel} <ArrowRight size={13} className="autox-neon-mark" />
         </Link>
       )}
     </div>

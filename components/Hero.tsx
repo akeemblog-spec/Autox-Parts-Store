@@ -90,7 +90,7 @@ export function Hero({ slides, autoplay = true, interval = 5000, pauseOnHover = 
 
   return (
     <section
-      className="relative isolate min-h-[760px] overflow-hidden bg-[#050506] sm:min-h-[800px] lg:min-h-[690px]"
+      className="relative isolate min-h-[760px] overflow-hidden bg-[#050506] sm:min-h-[800px] lg:h-[600px] lg:min-h-[600px]"
       aria-label="AutoX featured offers"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
@@ -99,7 +99,7 @@ export function Hero({ slides, autoplay = true, interval = 5000, pauseOnHover = 
       onPointerCancel={() => { start.current = null; }}
     >
       {/* A single fixed picture contains the bike. Slide images from the storefront do not move it. */}
-      <picture className="pointer-events-none absolute inset-0">
+      <picture className="pointer-events-none absolute inset-0 h-full w-full">
         <source media="(max-width: 767px)" srcSet="/images/hero/autox-neon-garage-ducati-mobile.webp" type="image/webp" />
         <source media="(max-width: 1199px)" srcSet="/images/hero/autox-neon-garage-ducati-tablet.webp" type="image/webp" />
         <img
@@ -112,7 +112,7 @@ export function Hero({ slides, autoplay = true, interval = 5000, pauseOnHover = 
       </picture>
       <div aria-hidden="true" className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(3,3,4,.68)_0%,rgba(3,3,4,.28)_39%,transparent_72%),linear-gradient(0deg,rgba(0,0,0,.7)_0%,transparent_25%)] max-md:bg-[linear-gradient(180deg,rgba(0,0,0,.54)_0%,rgba(0,0,0,.35)_37%,transparent_57%,rgba(0,0,0,.54)_100%)]" />
 
-      <div className="relative mx-auto flex min-h-[760px] max-w-[1600px] flex-col px-4 pb-[125px] pt-10 sm:min-h-[800px] sm:px-6 lg:min-h-[690px] lg:justify-center lg:px-8 lg:pb-[90px] lg:pt-12 xl:px-10">
+      <div className="relative mx-auto flex min-h-[760px] max-w-[1600px] flex-col px-4 pb-[125px] pt-10 sm:min-h-[800px] sm:px-6 lg:h-[600px] lg:min-h-[600px] lg:justify-center lg:px-8 lg:pb-[90px] lg:pt-12 xl:px-10">
         <div
           key={active.id}
           aria-live="polite"
@@ -121,8 +121,8 @@ export function Hero({ slides, autoplay = true, interval = 5000, pauseOnHover = 
             visible ? "translate-y-0 opacity-100" : "translate-y-3 opacity-0 pointer-events-none",
           )}
         >
-          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-autox-red/35 bg-black/55 px-3 py-1.5 text-[10px] font-black uppercase tracking-[.2em] text-red-300 backdrop-blur-sm sm:text-xs">
-            <Sparkles size={13} />{active.eyebrow || "Genuine performance parts"}
+          <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-autox-red/75 bg-black/55 px-3 py-1.5 text-[10px] font-black uppercase tracking-[.2em] text-autox-red shadow-[0_0_13px_rgba(237,28,36,.28)] backdrop-blur-sm sm:text-xs">
+            <Sparkles size={13} className="autox-neon-mark" />{active.eyebrow || "Genuine performance parts"}
           </div>
           <h1 className="text-[2.15rem] font-black leading-[1.02] tracking-[-.045em] text-white drop-shadow-[0_3px_16px_rgba(0,0,0,.85)] sm:text-5xl lg:text-[3rem] xl:text-[3.8rem] 2xl:text-[4.45rem]">
             {active.headline}{active.headlineAccent && <><br /><span className="text-autox-red">{active.headlineAccent}</span></>}
@@ -134,7 +134,7 @@ export function Hero({ slides, autoplay = true, interval = 5000, pauseOnHover = 
           </div>
         </div>
         <div className="relative z-10 mx-auto mt-5 grid w-full max-w-xl grid-cols-3 divide-x divide-white/15 rounded-2xl border border-white/10 bg-black/55 py-3 backdrop-blur-md lg:mx-0 lg:mt-7">
-          {trustPoints.map(({ icon: Icon, label }) => <div key={label} className="flex min-w-0 flex-col items-center gap-1.5 px-2 text-center sm:flex-row sm:justify-center sm:text-left"><Icon size={16} className="shrink-0 text-autox-red" /><span className="text-[9px] font-bold leading-tight text-zinc-200 sm:text-[11px]">{label}</span></div>)}
+          {trustPoints.map(({ icon: Icon, label }) => <div key={label} className="flex min-w-0 flex-col items-center gap-1.5 px-2 text-center sm:flex-row sm:justify-center sm:text-left"><Icon size={16} className="autox-neon-mark shrink-0" /><span className="text-[9px] font-bold leading-tight text-zinc-200 sm:text-[11px]">{label}</span></div>)}
         </div>
       </div>
 

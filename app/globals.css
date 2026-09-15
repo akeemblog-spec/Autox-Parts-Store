@@ -15,6 +15,56 @@ body {
   color: #ffffff;
 }
 
+/* Storefront card, icon and count states. Buttons retain the primary AutoX red. */
+.autox-neon-frame {
+  border-color: rgba(255, 255, 255, .08);
+  box-shadow: none;
+}
+.autox-neon-frame:hover {
+  border-color: #ED1C24;
+  box-shadow: 0 0 20px rgba(237, 28, 36, .12);
+}
+.autox-neon-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px 10px;
+  border: 1px solid #ED1C24;
+  border-radius: 999px;
+  background: #ED1C241A;
+  color: #ED1C24;
+  box-shadow: none;
+  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: .01em;
+  transition: background-color .25s, border-color .25s, color .25s, box-shadow .25s;
+}
+.group:hover .autox-neon-count,
+.autox-neon-count:hover {
+  background: #ED1C241A;
+  border-color: #ED1C24;
+  color: #ED1C24;
+  box-shadow: 0 0 14px rgba(237, 28, 36, .16);
+}
+.autox-neon-icon {
+  border: 1px solid #ED1C24;
+  border-radius: 14px;
+  background: #ED1C241A;
+  color: #ED1C24;
+  box-shadow: 0 0 12px rgba(237, 28, 36, .08);
+  transition: background-color .25s, border-color .25s, color .25s, box-shadow .25s;
+}
+.group:hover .autox-neon-icon,
+.autox-neon-icon:hover {
+  border-color: #ED1C24;
+  background: #ED1C241A;
+  color: #ED1C24;
+  box-shadow: 0 0 20px rgba(237, 28, 36, .25);
+}
+.autox-neon-mark { color: #ED1C24; }
+
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;

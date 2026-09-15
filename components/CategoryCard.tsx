@@ -2,21 +2,25 @@ import Link from "next/link";
 import * as Icons from "lucide-react";
 import { Category } from "@/types";
 
-export function CategoryCard({ category }: { category: Category }) {
+export function CategoryCard({ category, settings = {} }: { category: Category; settings?: Record<string, string> }) {
   const Icon = (Icons as unknown as Record<string, Icons.LucideIcon>)[category.icon] ?? Icons.Package;
+  const defaultArtwork = ["body-parts", "braking-system", "chain-sprocket", "electrical-parts", "engine-parts", "filters-oil", "suspension", "transmission"].includes(category.slug) ? `/images/category-cards/${category.slug}.webp` : "";
+  const image = settings[`category_card_image_${category.slug}`] || (category.image && !category.image.startsWith("/images/categories/") ? category.image : "") || defaultArtwork || category.image;
+  const iconImage = settings[`category_icon_image_${category.slug}`];
 
   return (
     <Link
       href={`/categories/${category.slug}`}
-      className="group flex items-center gap-3 rounded-2xl border border-autox-border bg-gradient-to-br from-autox-panel to-[#0c0c0e] p-3.5 text-left shadow-[0_10px_28px_rgba(0,0,0,.2)] transition-all duration-300 hover:-translate-y-1 hover:border-autox-red/60 hover:shadow-[0_16px_38px_rgba(0,0,0,.3)] sm:flex-col sm:p-5 sm:text-center"
+      aria-label={`Shop ${category.name}: ${category.productCount} products`}
+      className="autox-neon-frame group relative flex h-[255px] min-w-0 flex-col items-center overflow-hidden rounded-xl border bg-[#111113] px-2 pb-4 pt-4 text-center transition-[border-color,box-shadow] duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-autox-red sm:h-[300px] lg:h-[320px]"
     >
-      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-autox-red/10 text-autox-red ring-1 ring-inset ring-autox-red/20 transition-colors group-hover:bg-autox-red group-hover:text-white sm:mb-3 sm:h-14 sm:w-14 sm:rounded-2xl">
-        <Icon size={22} />
-      </div>
-      <div className="min-w-0">
-        <div className="line-clamp-1 text-xs font-bold text-white sm:text-sm">{category.name}</div>
-        <div className="mt-1 text-[10px] text-autox-gray sm:mt-1.5 sm:text-xs">{category.productCount} Products</div>
-      </div>
+      {image && <img src={image} alt={`${category.name} motorcycle parts`} loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-500 ease-out group-hover:scale-[1.04] motion-reduce:transition-none"/>}
+      <span aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(to_bottom,rgba(8,8,10,.85)_0%,rgba(8,8,10,.36)_36%,transparent_66%,rgba(8,8,10,.84)_100%)]"/>
+      <span className="autox-neon-icon relative flex h-10 w-10 shrink-0 items-center justify-center sm:h-11 sm:w-11">
+        {iconImage ? <img src={iconImage} alt="" className="h-7 w-7 object-contain"/> : <Icon size={20} strokeWidth={1.9} className="autox-neon-mark"/>}
+      </span>
+      <span className="relative mt-3 line-clamp-2 min-h-[2.5em] text-xs font-extrabold leading-tight text-white sm:text-sm">{category.name}</span>
+      <span className="autox-neon-count relative mt-auto"><span className="mr-1 tabular-nums">{category.productCount}</span> Products</span>
     </Link>
   );
 }
