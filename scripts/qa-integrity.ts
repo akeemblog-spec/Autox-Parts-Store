@@ -101,6 +101,7 @@ expect(cartPage.includes("Coupon ("), "cart summary exposes coupon discount row"
 expect(cartPage.includes('new CustomEvent("autox-cart-updated", { detail: { count } })'), "cart publishes its exact live count after mutations");
 expect(cartPage.includes("publishCartCount(nextItems)") && cartPage.includes("publishCartCount([])"), "remove, quantity and checkout flows refresh Cart badges");
 expect(cartPage.includes("busyItemIdsRef.current.size > 0") && cartPage.includes("disabled={busyItemIds.size > 0"), "cart prevents overlapping item mutations");
+expect(cartPage.includes("stock: number") && cartPage.includes("quantity >= product.stock"), "cart stock guard matches the API product data type");
 expect(cartPage.includes("Your cart changed. Apply the coupon again"), "cart invalidates stale coupon totals after item changes");
 
 

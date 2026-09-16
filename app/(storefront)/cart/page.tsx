@@ -38,6 +38,7 @@ interface CartItemRow {
     name: string;
     slug: string;
     price: number;
+    stock: number;
     images: { url: string; alt: string }[];
   };
 }

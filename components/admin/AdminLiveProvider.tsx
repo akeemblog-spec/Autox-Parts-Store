@@ -67,13 +67,13 @@ export function AdminLiveProvider({children}:{children:React.ReactNode}) {
   },[pathname,router,toast]);
 
   useEffect(()=>{
-    refreshNow();
+    const initial = window.setTimeout(()=>{ void refreshNow(); },0);
     const timer = window.setInterval(()=>{ if(document.visibilityState === 'visible') refreshNow(); },12000);
     const onFocus = ()=>refreshNow();
     const onVisibility = ()=>{ if(document.visibilityState === 'visible') refreshNow(); };
     window.addEventListener('focus',onFocus);
     document.addEventListener('visibilitychange',onVisibility);
-    return ()=>{ window.clearInterval(timer); window.removeEventListener('focus',onFocus); document.removeEventListener('visibilitychange',onVisibility); };
+    return ()=>{ window.clearTimeout(initial); window.clearInterval(timer); window.removeEventListener('focus',onFocus); document.removeEventListener('visibilitychange',onVisibility); };
   },[refreshNow]);
 
   const markNotificationRead = useCallback(async(id:string)=>{
