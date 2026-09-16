@@ -130,10 +130,10 @@ export function ProductDetailView({
           <div>
             <div className="aspect-square bg-autox-panel border border-autox-border rounded-2xl overflow-hidden relative">
               {product.genuine && <Badge variant="genuine" className="absolute top-3 left-3 z-10">Genuine</Badge>}
-              {product.images[activeImage] && (
+              {(product.images[activeImage] || product.images.length === 0) && (
                 <img
-                  src={product.images[activeImage].url}
-                  alt={product.images[activeImage].alt}
+                  src={product.images[activeImage]?.url || "/images/fallback/product-parts.webp"}
+                  alt={product.images[activeImage]?.alt || "AutoX parts image placeholder"}
                   className="w-full h-full object-cover"
                 />
               )}

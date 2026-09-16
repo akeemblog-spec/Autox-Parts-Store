@@ -172,6 +172,21 @@ checkout validation are already wired to respect it.
    - `AUTH_TRUST_HOST` — `true`
 6. Deploy. Every push to your main branch redeploys automatically.
 
+### Admin image uploads
+
+Connect a **public Vercel Blob store** to the Vercel project under Storage, select
+Production and Preview (and Development if needed), then redeploy. The Blob
+connection supplies `BLOB_STORE_ID` and rotating `VERCEL_OIDC_TOKEN` (or a
+`BLOB_READ_WRITE_TOKEN` fallback) automatically. Admin uploads for Products,
+Catalog and Storefront then return durable, public image URLs. Without Blob,
+uploads work to `public/uploads/products` only when running locally in
+development; production returns a clear configuration error. JPG, PNG, WebP and
+GIF images up to 4 MB are accepted. Upload the image, then save its product,
+catalog item or storefront artwork separately.
+
+Existing local development image paths do not migrate automatically to Blob;
+reupload those images from the admin before relying on a production deployment.
+
 ### After deploying
 
 - For an existing installation, follow

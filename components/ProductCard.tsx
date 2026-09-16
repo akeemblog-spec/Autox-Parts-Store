@@ -22,7 +22,7 @@ export function ProductCard({ product }: { product: Product }) {
   const [added, setAdded] = useState(false);
   const [compared, setCompared] = useState(false);
   const [saving, setSaving] = useState(false);
-  const image = product.images[0];
+  const image = product.images[0] ?? { url: "/images/fallback/product-parts.webp", alt: "AutoX parts image placeholder" };
   const isAuthenticated = status === "authenticated" && Boolean(session?.user?.id) && !session?.user?.invalidated;
 
   useEffect(() => {

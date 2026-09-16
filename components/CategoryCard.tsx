@@ -5,7 +5,7 @@ import { Category } from "@/types";
 export function CategoryCard({ category, settings = {} }: { category: Category; settings?: Record<string, string> }) {
   const Icon = (Icons as unknown as Record<string, Icons.LucideIcon>)[category.icon] ?? Icons.Package;
   const defaultArtwork = ["body-parts", "braking-system", "chain-sprocket", "electrical-parts", "engine-parts", "filters-oil", "suspension", "transmission"].includes(category.slug) ? `/images/category-cards/${category.slug}.webp` : "";
-  const image = settings[`category_card_image_${category.slug}`] || (category.image && !category.image.startsWith("/images/categories/") ? category.image : "") || defaultArtwork || category.image;
+  const image = settings[`category_card_image_${category.slug}`] || (category.image && !category.image.startsWith("/images/categories/") ? category.image : "") || defaultArtwork || category.image || "/images/fallback/product-parts.webp";
   const iconImage = settings[`category_icon_image_${category.slug}`];
 
   return (

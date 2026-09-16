@@ -30,7 +30,7 @@ export async function BrandPageServer({ slug }: { slug: string }) {
   const featuredScenes = ["honda", "yamaha", "bajaj", "tvs", "suzuki", "hero", "ktm", "kawasaki", "royal-enfield", "bajaj-re", "tvs-king", "piaggio-ape", "mahindra-alfa", "atul-gem"];
   const defaultScene = featuredScenes.includes(slug) ? `/images/brand-heroes/${slug}.webp` : "";
   const catalogHero = brand.coverImage && !brand.coverImage.startsWith("/images/brands/") ? brand.coverImage : "";
-  const heroImage = settings[`brand_hero_image_${slug}`] || catalogHero || defaultScene || brand.coverImage || brand.vehicleImage;
+  const heroImage = settings[`brand_hero_image_${slug}`] || catalogHero || defaultScene || brand.coverImage || brand.vehicleImage || "/images/fallback/brand-garage.webp";
   const logoSlug = ({ "bajaj-re": "bajaj", "tvs-king": "tvs", "piaggio-ape": "piaggio", "mahindra-alfa": "mahindra", "atul-gem": "atul" } as Record<string,string>)[slug] || slug;
   const catalogLogo = brand.logo && !brand.logo.startsWith("/images/brands/") ? brand.logo : "";
   const defaultLogo = featuredScenes.includes(slug) ? `/images/brand-cards/${logoSlug}-logo.webp` : brand.logo;

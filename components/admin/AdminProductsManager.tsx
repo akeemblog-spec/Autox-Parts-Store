@@ -4,7 +4,9 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Archive, Check, ImagePlus, Pencil, Plus, RotateCcw, Search, Trash2, X } from "lucide-react";
+import { Archive, Check, Pencil, Plus, RotateCcw, Search, Trash2, X } from "lucide-react";
+import { AdminImageUpload } from "@/components/admin/AdminImageUpload";
+import { uploadAdminImage } from "@/lib/admin/upload-image";
 import { formatPrice } from "@/lib/utils/format";
 import { cn } from "@/lib/utils/cn";
 import { useAppUI } from "@/components/ui/AppUIProvider";
@@ -30,7 +32,7 @@ const emptyForm = (brands: CatalogOption[], categories: CatalogOption[], vehicle
   name: "", slug: "", brandId: brands[0]?.id ?? "", categoryId: categories[0]?.id ?? "", vehicleType: vehicleTypes[0]?.slug ?? "bike",
   modelYears: "", partType: partTypes[0]?.slug ?? "aftermarket", price: "", previousPrice: "", discount: "", stock: "0", genuine: false,
   installmentAvailable: false, description: "", warranty: "6 months", deliveryEstimate: "2-4 business days",
-  images: [{ url: "", alt: "" }], compatibility: [{ brandName: "", modelName: "", years: "" }], specifications: [{ label: "", value: "" }],
+  images: [{ url: "/images/fallback/product-parts.webp", alt: "AutoX parts image placeholder" }], compatibility: [{ brandName: "", modelName: "", years: "" }], specifications: [{ label: "", value: "" }],
 });
 
 function slugify(value: string) {
@@ -93,12 +95,17 @@ export function AdminProductsManager({ initialProducts, brands, categories, vehi
   const uploadImage = async (index: number, file?: File) => {
     if (!file) return;
     setUploadingIndex(index); setError(null);
-    const body = new FormData(); body.append("file", file);
-    const res = await fetch("/api/admin/uploads", { method: "POST", body });
-    const data = await res.json().catch(() => ({}));
-    setUploadingIndex(null);
-    if (!res.ok) { setError(data.error ?? "Image upload failed"); return; }
-    updateRow("images", index, { url: data.url, alt: form.images[index]?.alt || form.name });
+    try {
+      const url = await uploadAdminImage(file);
+      const currentAlt = form.images[index]?.alt;
+      updateRow("images", index, { url, alt: currentAlt && currentAlt !== "AutoX parts image placeholder" ? currentAlt : form.name });
+      toast("Image uploaded. Save the product to keep it.", "success");
+    } catch (cause) {
+      const message = cause instanceof Error ? cause.message : "Image upload failed.";
+      setError(message); toast(message, "error");
+    } finally {
+      setUploadingIndex(null);
+    }
   };
 
   const saveProduct = async () => {
@@ -217,13 +224,21 @@ export function AdminProductsManager({ initialProducts, brands, categories, vehi
 
           <section><h3 className="text-sm font-bold text-white uppercase tracking-wide mb-3">Description & Fulfilment</h3><div className="grid md:grid-cols-2 gap-4"><label className="md:col-span-2"><span className={labelClass}>Description *</span><textarea rows={5} className={inputClass} value={form.description} onChange={(e)=>setForm(f=>({...f,description:e.target.value}))}/></label><label><span className={labelClass}>Warranty *</span><input className={inputClass} value={form.warranty} onChange={(e)=>setForm(f=>({...f,warranty:e.target.value}))}/></label><label><span className={labelClass}>Delivery estimate *</span><input className={inputClass} value={form.deliveryEstimate} onChange={(e)=>setForm(f=>({...f,deliveryEstimate:e.target.value}))}/></label></div></section>
 
-          <section><div className="flex items-center justify-between mb-3"><h3 className="text-sm font-bold text-white uppercase tracking-wide">Product Images</h3><button onClick={()=>addRow("images")} className="text-xs text-autox-red font-bold">+ Add image</button></div><div className="space-y-3">{form.images.map((row,i)=><div key={i} className="grid md:grid-cols-[1fr_1fr_auto] gap-2 p-3 border border-autox-border rounded-sm"><div><span className={labelClass}>Image URL</span><input className={inputClass} value={row.url} onChange={(e)=>updateRow("images",i,{url:e.target.value})}/><label className="mt-2 inline-flex items-center gap-2 text-xs font-semibold text-white cursor-pointer"><ImagePlus size={14}/>{uploadingIndex===i?"Uploading...":"Upload from computer"}<input type="file" accept="image/jpeg,image/png,image/webp,image/gif" className="hidden" disabled={uploadingIndex===i} onChange={(e)=>uploadImage(i,e.target.files?.[0])}/></label></div><label><span className={labelClass}>Alt text</span><input className={inputClass} value={row.alt} onChange={(e)=>updateRow("images",i,{alt:e.target.value})}/></label><button onClick={()=>removeRow("images",i)} className="self-end w-9 h-9 grid place-items-center text-autox-gray hover:text-autox-red"><Trash2 size={15}/></button></div>)}</div></section>
+          <section>
+            <div className="mb-3 flex items-center justify-between"><h3 className="text-sm font-bold uppercase tracking-wide text-white">Product Images</h3><button disabled={uploadingIndex!==null} onClick={()=>addRow("images")} className="text-xs font-bold text-autox-red disabled:opacity-50">+ Add image</button></div>
+            <div className="space-y-3">{form.images.map((row,i)=><div key={i} className="grid gap-3 rounded-sm border border-autox-border p-3 md:grid-cols-[64px_1fr_1fr_auto]">
+              <div className="grid h-16 w-16 place-items-center overflow-hidden rounded-md border border-autox-border bg-autox-panel3">{row.url ? <img src={row.url} alt={row.alt || form.name || "Product preview"} className="h-full w-full object-contain" /> : <span className="text-[10px] text-autox-gray">No image</span>}</div>
+              <div><span className={labelClass}>Image URL</span><input className={inputClass} value={row.url} onChange={(e)=>updateRow("images",i,{url:e.target.value})}/><div className="mt-2"><AdminImageUpload onSelect={file=>uploadImage(i,file)} busy={uploadingIndex!==null} /></div></div>
+              <label><span className={labelClass}>Alt text</span><input className={inputClass} value={row.alt} onChange={(e)=>updateRow("images",i,{alt:e.target.value})}/></label>
+              <button disabled={uploadingIndex!==null} onClick={()=>removeRow("images",i)} aria-label={`Remove image ${i+1}`} className="grid h-10 w-10 place-items-center self-end text-autox-gray hover:text-autox-red disabled:opacity-50"><Trash2 size={15}/></button>
+            </div>)}</div>
+          </section>
 
           <section><div className="flex items-center justify-between mb-3"><h3 className="text-sm font-bold text-white uppercase tracking-wide">Vehicle Compatibility / Fitment</h3><button onClick={()=>addRow("compatibility")} className="text-xs text-autox-red font-bold">+ Add fitment</button></div><div className="space-y-2">{form.compatibility.map((row,i)=><div key={i} className="grid md:grid-cols-[1fr_1fr_1fr_auto] gap-2"><input placeholder="Brand e.g. Honda" className={inputClass} value={row.brandName} onChange={(e)=>updateRow("compatibility",i,{brandName:e.target.value})}/><input placeholder="Model e.g. CBR150R" className={inputClass} value={row.modelName} onChange={(e)=>updateRow("compatibility",i,{modelName:e.target.value})}/><input placeholder="Years e.g. 2021-2025" className={inputClass} value={row.years} onChange={(e)=>updateRow("compatibility",i,{years:e.target.value})}/><button onClick={()=>removeRow("compatibility",i)} className="w-9 h-9 grid place-items-center text-autox-gray hover:text-autox-red"><Trash2 size={15}/></button></div>)}</div></section>
 
           <section><div className="flex items-center justify-between mb-3"><h3 className="text-sm font-bold text-white uppercase tracking-wide">Specifications</h3><button onClick={()=>addRow("specifications")} className="text-xs text-autox-red font-bold">+ Add specification</button></div><div className="space-y-2">{form.specifications.map((row,i)=><div key={i} className="grid md:grid-cols-[1fr_1fr_auto] gap-2"><input placeholder="Label e.g. Part Number" className={inputClass} value={row.label} onChange={(e)=>updateRow("specifications",i,{label:e.target.value})}/><input placeholder="Value" className={inputClass} value={row.value} onChange={(e)=>updateRow("specifications",i,{value:e.target.value})}/><button onClick={()=>removeRow("specifications",i)} className="w-9 h-9 grid place-items-center text-autox-gray hover:text-autox-red"><Trash2 size={15}/></button></div>)}</div></section>
         </div>
-        <div className="sticky bottom-0 flex justify-end gap-3 px-5 py-4 bg-autox-panel border-t border-autox-border"><button onClick={()=>setModalOpen(false)} className="px-4 py-2 text-sm font-semibold text-autox-gray border border-autox-border rounded-sm">Cancel</button><button disabled={busy} onClick={saveProduct} className="px-5 py-2 bg-autox-red hover:bg-autox-redDark disabled:opacity-50 text-white text-sm font-bold rounded-sm">{busy?"Saving...":"Save Product"}</button></div>
+        <div className="sticky bottom-0 flex justify-end gap-3 px-5 py-4 bg-autox-panel border-t border-autox-border"><button onClick={()=>setModalOpen(false)} className="px-4 py-2 text-sm font-semibold text-autox-gray border border-autox-border rounded-sm">Cancel</button><button disabled={busy||uploadingIndex!==null} onClick={saveProduct} className="px-5 py-2 bg-autox-red hover:bg-autox-redDark disabled:opacity-50 text-white text-sm font-bold rounded-sm">{busy?"Saving...":uploadingIndex!==null?"Uploading image...":"Save Product"}</button></div>
       </div>
     </div>}
   </>;

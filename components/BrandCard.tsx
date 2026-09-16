@@ -25,7 +25,7 @@ export function BrandCard({ brand, settings = {} }: { brand: Brand; active?: boo
   const catalogVehicle = brand.vehicleImage && !brand.vehicleImage.startsWith("/images/brands/") ? brand.vehicleImage : "";
   const catalogLogo = brand.logo && !brand.logo.startsWith("/images/brands/") ? brand.logo : "";
   const refreshedBrand = ["ktm", "kawasaki", "royal-enfield"].includes(brand.slug);
-  const defaultVehicle = artwork ? `/images/brand-cards/${artwork.scene}` : brand.vehicleImage;
+  const defaultVehicle = artwork ? `/images/brand-cards/${artwork.scene}` : brand.vehicleImage || "/images/fallback/brand-garage.webp";
   const vehicle = settings[`brand_card_image_${brand.slug}`] || (refreshedBrand ? defaultVehicle : catalogVehicle || defaultVehicle);
   const defaultLogo = artwork ? `/images/brand-cards/${artwork.logo}` : brand.logo;
   const logo = settings[`brand_card_logo_${brand.slug}`] || (brand.slug === "ktm" ? defaultLogo : catalogLogo || defaultLogo);
