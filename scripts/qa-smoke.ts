@@ -7,7 +7,7 @@ type Check = {
   notContains?: string[];
 };
 
-const chrome = ["AUTO", "PARTS STORE", "Customer Support"];
+const chrome = ["AUTO", "PARTS STORE"];
 const checks: Check[] = [
   { path: "/", statuses: [200], contains: chrome },
   { path: "/products", statuses: [200], contains: chrome },

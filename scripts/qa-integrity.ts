@@ -98,6 +98,10 @@ expect(cartPage.includes("SectionHeading step=\"3\""), "cart has payment section
 expect(cartPage.includes("Remove from cart?"), "cart removal uses AutoX confirmation modal");
 expect(cartPage.includes("Saved Addresses"), "cart supports saved address selection");
 expect(cartPage.includes("Coupon ("), "cart summary exposes coupon discount row");
+expect(cartPage.includes('new CustomEvent("autox-cart-updated", { detail: { count } })'), "cart publishes its exact live count after mutations");
+expect(cartPage.includes("publishCartCount(nextItems)") && cartPage.includes("publishCartCount([])"), "remove, quantity and checkout flows refresh Cart badges");
+expect(cartPage.includes("busyItemIdsRef.current.size > 0") && cartPage.includes("disabled={busyItemIds.size > 0"), "cart prevents overlapping item mutations");
+expect(cartPage.includes("Your cart changed. Apply the coupon again"), "cart invalidates stale coupon totals after item changes");
 
 
 const productManager = text("components/admin/AdminProductsManager.tsx");
@@ -149,6 +153,7 @@ expect(mobileDrawer.includes("compareCount"), "mobile drawer exposes live Compar
 const header = text("components/Header.tsx");
 expect(header.includes('href="/wishlist"') && header.includes('md:hidden'), "mobile header fills right action with Wishlist");
 expect(header.includes("autox-compare-updated"), "header refreshes Compare count from live events");
+expect(header.includes("Promise.allSettled") && header.includes("detail?.count"), "header count refreshes tolerate partial failures and exact Cart events");
 expect(text("app/globals.css").includes(".autox-count-badge"), "storefront uses unified AutoX red count badge");
 expect(!mobileNav.includes('bg-white px-1 text-[9px] font-black leading-none text-black'), "mobile Cart badge no longer uses white circle styling");
 expect(mobileNav.includes('active: panel === "search"'), "mobile Search active state follows the Search panel");
@@ -181,9 +186,9 @@ for (const page of [
   "app/(storefront)/installments/page.tsx",
 ]) expect(existsSync(join(root, page)), `required storefront page exists: ${page}`);
 const hero2026 = text("components/Hero.tsx");
-expect(hero2026.includes("SWIPE_THRESHOLD") && hero2026.includes("onPointerMove") && hero2026.includes("touch-pan-y"), "Hero supports touch/mouse swipe without blocking vertical scrolling");
-expect(hero2026.includes("h-[700px]") && hero2026.includes("object-contain") && hero2026.includes("object-cover"), "Hero has fixed responsive height and controlled image treatment");
-expect(hero2026.includes("new window.Image()"), "Hero preloads slide images before transitions");
+expect(hero2026.includes("onPointerDown") && hero2026.includes("onPointerUp") && hero2026.includes("touch-pan-y"), "Hero supports touch/mouse swipe without blocking vertical scrolling");
+expect(hero2026.includes("lg:h-[600px]") && hero2026.includes("object-cover"), "Hero has the requested 600px desktop height and covered background");
+expect(hero2026.includes("A single fixed picture contains the bike") && !hero2026.includes("src={active.image}"), "Hero keeps one fixed background while only slide content changes");
 expect(text("components/ModelSelector.tsx").includes("hover:border-autox-red") && !text("components/ModelSelector.tsx").includes("hover:-translate-y-0.5"), "model hover keeps red top border visible");
 expect(existsSync(join(root, "components/installments/InstallmentModal.tsx")), "reusable installment modal exists");
 expect(text("components/LiveProductGrid.tsx").includes("<InstallmentModal") && text("components/pages/ProductDetailView.tsx").includes("<InstallmentModal"), "installment modal is connected to product grid and product detail");

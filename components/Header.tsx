@@ -26,34 +26,35 @@ export function Header({ cartCount = 0, wishlistCount = 0 }: { cartCount?: numbe
       return;
     }
 
+    let refreshVersion = 0;
+    const loadItems = async (url: string) => {
+      const response = await fetch(url, { cache: "no-store" });
+      if (!response.ok) throw new Error(`Unable to refresh ${url}`);
+      return response.json();
+    };
     const refreshCounts = async () => {
-      const [cartRes, wishlistRes, compareRes] = await Promise.all([
-        fetch("/api/cart", { cache: "no-store" }),
-        fetch("/api/wishlist", { cache: "no-store" }),
-        fetch("/api/compare", { cache: "no-store" }),
+      const version = ++refreshVersion;
+      const [cartResult, wishlistResult, compareResult] = await Promise.allSettled([
+        loadItems("/api/cart"),
+        loadItems("/api/wishlist"),
+        loadItems("/api/compare"),
       ]);
-      if (cartRes.ok) {
-        const cart = await cartRes.json();
-        setLiveCartCount((cart.items ?? []).reduce((sum: number, item: { quantity?: number }) => sum + (item.quantity ?? 0), 0));
-      }
-      if (wishlistRes.ok) {
-        const wishlist = await wishlistRes.json();
-        setLiveWishlistCount((wishlist.items ?? []).length);
-      }
-      if (compareRes.ok) {
-        const compare = await compareRes.json();
-        setLiveCompareCount((compare.items ?? []).length);
-      }
+      if (version !== refreshVersion) return;
+      if (cartResult.status === "fulfilled") setLiveCartCount((cartResult.value.items ?? []).reduce((sum: number, item: { quantity?: number }) => sum + (item.quantity ?? 0), 0));
+      if (wishlistResult.status === "fulfilled") setLiveWishlistCount((wishlistResult.value.items ?? []).length);
+      if (compareResult.status === "fulfilled") setLiveCompareCount((compareResult.value.items ?? []).length);
     };
 
-    const onCartUpdated = () => {
-      refreshCounts();
+    const onCartUpdated = (event: Event) => {
+      const detail = event instanceof CustomEvent ? event.detail as { count?: unknown } | undefined : undefined;
+      if (typeof detail?.count === "number" && Number.isFinite(detail.count)) setLiveCartCount(Math.max(0, detail.count));
+      void refreshCounts();
       setCartPulse(false);
       window.requestAnimationFrame(() => setCartPulse(true));
       window.setTimeout(() => setCartPulse(false), 500);
     };
 
-    refreshCounts();
+    void refreshCounts();
     window.addEventListener("autox-cart-updated", onCartUpdated);
     window.addEventListener("autox-wishlist-updated", refreshCounts);
     window.addEventListener("autox-compare-updated", refreshCounts);

@@ -90,7 +90,7 @@ export function Hero({ slides, autoplay = true, interval = 5000, pauseOnHover = 
 
   return (
     <section
-      className="relative isolate min-h-[760px] overflow-hidden bg-[#050506] sm:min-h-[800px] lg:h-[600px] lg:min-h-[600px]"
+      className="relative isolate min-h-[760px] touch-pan-y overflow-hidden bg-[#050506] sm:min-h-[800px] lg:h-[600px] lg:min-h-[600px]"
       aria-label="AutoX featured offers"
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}

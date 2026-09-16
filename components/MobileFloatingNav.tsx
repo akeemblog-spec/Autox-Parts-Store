@@ -35,16 +35,26 @@ export function MobileFloatingNav() {
   useEffect(() => {
     if (!isAuthenticated) return;
     let mounted = true;
+    let refreshVersion = 0;
     const refreshCart = async () => {
+      const version = ++refreshVersion;
       try {
         const response = await fetch("/api/cart", { cache: "no-store" });
-        if (!response.ok || !mounted) return;
+        if (!response.ok || !mounted || version !== refreshVersion) return;
         const cart = await response.json();
+        if (!mounted || version !== refreshVersion) return;
         setCartCount((cart.items ?? []).reduce((sum: number, item: { quantity?: number }) => sum + (item.quantity ?? 0), 0));
       } catch { /* keep last known count */ }
     };
-    const onUpdated = () => { refreshCart(); setCartPulse(false); requestAnimationFrame(() => setCartPulse(true)); window.setTimeout(() => setCartPulse(false), 450); };
-    refreshCart();
+    const onUpdated = (event: Event) => {
+      const detail = event instanceof CustomEvent ? event.detail as { count?: unknown } | undefined : undefined;
+      if (typeof detail?.count === "number" && Number.isFinite(detail.count)) setCartCount(Math.max(0, detail.count));
+      void refreshCart();
+      setCartPulse(false);
+      requestAnimationFrame(() => setCartPulse(true));
+      window.setTimeout(() => setCartPulse(false), 450);
+    };
+    void refreshCart();
     window.addEventListener("autox-cart-updated", onUpdated);
     return () => { mounted = false; window.removeEventListener("autox-cart-updated", onUpdated); };
   }, [isAuthenticated, session?.user?.id]);

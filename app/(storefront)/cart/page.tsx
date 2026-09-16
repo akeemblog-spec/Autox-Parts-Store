@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
@@ -120,6 +120,23 @@ export default function CartPage() {
   const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
   const [address, setAddress] = useState<CheckoutAddress>(emptyAddress);
+  const [busyItemIds, setBusyItemIds] = useState<Set<string>>(new Set());
+  const busyItemIdsRef = useRef(new Set<string>());
+
+  const setItemBusy = (itemId: string, busy: boolean) => {
+    if (busy) busyItemIdsRef.current.add(itemId);
+    else busyItemIdsRef.current.delete(itemId);
+    setBusyItemIds(new Set(busyItemIdsRef.current));
+  };
+  const publishCartCount = (nextItems: CartItemRow[]) => {
+    const count = nextItems.reduce((sum, item) => sum + item.quantity, 0);
+    window.dispatchEvent(new CustomEvent("autox-cart-updated", { detail: { count } }));
+  };
+  const invalidateAppliedCoupon = () => {
+    if (couponDiscount <= 0) return;
+    setCouponDiscount(0);
+    setCouponMessage("Your cart changed. Apply the coupon again to recalculate the discount.");
+  };
 
   useEffect(() => {
     if (status === "unauthenticated" || (status === "authenticated" && (!session?.user?.id || session.user.invalidated))) {
@@ -128,9 +145,14 @@ export default function CartPage() {
     }
     if (status !== "authenticated") return;
 
+    const requiredJson = async (url: string) => {
+      const response = await fetch(url, { cache: "no-store" });
+      if (!response.ok) throw new Error(`Unable to load ${url}`);
+      return response.json();
+    };
     Promise.all([
-      fetch("/api/cart").then((res) => res.json()),
-      fetch("/api/payment-methods").then((res) => res.json()),
+      requiredJson("/api/cart"),
+      requiredJson("/api/payment-methods"),
       fetch("/api/account/addresses").then((res) => (res.ok ? res.json() : { addresses: [] })),
       fetch("/api/storefront/checkout-settings").then((res) =>
         res.ok ? res.json() : { colomboStandardDeliveryFee: 500, outsideColomboStandardDeliveryFee: 850, colomboExpressExtraFee: 250, outsideColomboExpressExtraFee: 450, expressEnabled: true },
@@ -168,24 +190,37 @@ export default function CartPage() {
   }, [status, session?.user?.id, session?.user?.invalidated, router]);
 
   const updateQuantity = async (itemId: string, quantity: number) => {
-    if (quantity < 1) return;
+    if (quantity < 1 || busyItemIdsRef.current.size > 0) return;
     const previous = items.find((item) => item.id === itemId)?.quantity;
     if (previous == null || previous === quantity) return;
 
+    const nextItems = items.map((item) => (item.id === itemId ? { ...item, quantity } : item));
+    setItemBusy(itemId, true);
     setCheckoutError(null);
-    setItems((current) => current.map((item) => (item.id === itemId ? { ...item, quantity } : item)));
-    const response = await fetch(`/api/cart/items/${itemId}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ quantity }),
-    });
-
-    if (!response.ok) {
+    setItems(nextItems);
+    try {
+      const response = await fetch(`/api/cart/items/${itemId}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ quantity }),
+      });
+      if (response.ok) {
+        invalidateAppliedCoupon();
+        publishCartCount(nextItems);
+        return;
+      }
       const data = await response.json().catch(() => ({}));
       setItems((current) => current.map((item) => (item.id === itemId ? { ...item, quantity: previous } : item)));
       const message = data.error ?? "Unable to update quantity. Please check available stock.";
       setCheckoutError(message);
       toast(message, "error");
+    } catch {
+      setItems((current) => current.map((item) => (item.id === itemId ? { ...item, quantity: previous } : item)));
+      const message = "Unable to update quantity. Check your connection and try again.";
+      setCheckoutError(message);
+      toast(message, "error");
+    } finally {
+      setItemBusy(itemId, false);
     }
   };
 
@@ -196,21 +231,34 @@ export default function CartPage() {
       confirmLabel: "Remove Item",
       destructive: true,
     });
-    if (!accepted) return;
+    if (!accepted || busyItemIdsRef.current.size > 0) return;
 
     const previous = items;
+    const nextItems = items.filter((row) => row.id !== item.id);
+    setItemBusy(item.id, true);
     setCheckoutError(null);
-    setItems((current) => current.filter((row) => row.id !== item.id));
-    const response = await fetch(`/api/cart/items/${item.id}`, { method: "DELETE" });
-    if (!response.ok) {
+    setItems(nextItems);
+    try {
+      const response = await fetch(`/api/cart/items/${item.id}`, { method: "DELETE" });
+      if (response.ok) {
+        invalidateAppliedCoupon();
+        publishCartCount(nextItems);
+        toast("Item removed from your cart.", "success");
+        return;
+      }
       const data = await response.json().catch(() => ({}));
       setItems(previous);
       const message = data.error ?? "Unable to remove this item. Please try again.";
       setCheckoutError(message);
       toast(message, "error");
-      return;
+    } catch {
+      setItems(previous);
+      const message = "Unable to remove this item. Check your connection and try again.";
+      setCheckoutError(message);
+      toast(message, "error");
+    } finally {
+      setItemBusy(item.id, false);
     }
-    toast("Item removed from your cart.", "success");
   };
 
   const subtotal = useMemo(() => items.reduce((sum, item) => sum + item.product.price * item.quantity, 0), [items]);
@@ -229,21 +277,26 @@ export default function CartPage() {
       return;
     }
     setCouponMessage(null);
-    const response = await fetch("/api/coupons/validate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ code: couponCode, subtotal }),
-    });
-    const data = await response.json().catch(() => ({}));
-    if (!response.ok) {
+    try {
+      const response = await fetch("/api/coupons/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: couponCode, subtotal }),
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        setCouponDiscount(0);
+        setCouponMessage(data.error || "Invalid coupon");
+        return;
+      }
+      setCouponCode(data.code);
+      setCouponDiscount(data.discountAmount);
+      setCouponMessage(`Coupon applied. You save ${formatPrice(data.discountAmount)}.`);
+      toast(`${data.code} applied successfully.`, "success");
+    } catch {
       setCouponDiscount(0);
-      setCouponMessage(data.error || "Invalid coupon");
-      return;
+      setCouponMessage("Unable to validate this coupon. Check your connection and try again.");
     }
-    setCouponCode(data.code);
-    setCouponDiscount(data.discountAmount);
-    setCouponMessage(`Coupon applied. You save ${formatPrice(data.discountAmount)}.`);
-    toast(`${data.code} applied successfully.`, "success");
   };
 
   const selectSavedAddress = (saved: SavedAddress) => {
@@ -275,29 +328,35 @@ export default function CartPage() {
 
     setCheckingOut(true);
     setCheckoutError(null);
-    const response = await fetch("/api/orders", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        address,
-        paymentMethod: selectedMethod,
-        deliveryMethod,
-        couponCode: couponDiscount > 0 ? couponCode : undefined,
-      }),
-    });
-    setCheckingOut(false);
-
-    if (!response.ok) {
+    try {
+      const response = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          address,
+          paymentMethod: selectedMethod,
+          deliveryMethod,
+          couponCode: couponDiscount > 0 ? couponCode : undefined,
+        }),
+      });
+      if (response.ok) {
+        setItems([]);
+        publishCartCount([]);
+        toast("Order placed successfully.", "success");
+        router.push("/account");
+        return;
+      }
       const data = await response.json().catch(() => ({}));
       const message = data.error ?? "Couldn't place your order. Please try again.";
       setCheckoutError(message);
       toast(message, "error");
-      return;
+    } catch {
+      const message = "Couldn't place your order. Check your connection and try again.";
+      setCheckoutError(message);
+      toast(message, "error");
+    } finally {
+      setCheckingOut(false);
     }
-
-    setItems([]);
-    toast("Order placed successfully.", "success");
-    router.push("/account");
   };
 
   if (status === "loading" || loading) {
@@ -390,11 +449,11 @@ export default function CartPage() {
                           <div className="flex items-center justify-between gap-3 md:justify-center">
                             <span className="text-[10px] font-bold uppercase tracking-wide text-autox-gray md:hidden">Quantity</span>
                             <div className="inline-flex h-10 items-center rounded-xl border border-autox-border bg-autox-panel3">
-                              <button aria-label="Decrease quantity" onClick={() => updateQuantity(id, quantity - 1)} className="grid h-full w-10 place-items-center text-autox-gray transition-colors hover:bg-white/5 hover:text-white">
+                              <button disabled={busyItemIds.size > 0 || quantity <= 1} aria-label="Decrease quantity" onClick={() => updateQuantity(id, quantity - 1)} className="grid h-full w-10 place-items-center text-autox-gray transition-colors hover:bg-white/5 hover:text-white disabled:cursor-not-allowed disabled:opacity-40">
                                 <Minus size={14} />
                               </button>
                               <span className="grid h-full min-w-10 place-items-center border-x border-autox-border px-2 text-sm font-bold text-white">{quantity}</span>
-                              <button aria-label="Increase quantity" onClick={() => updateQuantity(id, quantity + 1)} className="grid h-full w-10 place-items-center text-autox-gray transition-colors hover:bg-white/5 hover:text-white">
+                              <button disabled={busyItemIds.size > 0 || quantity >= product.stock} aria-label="Increase quantity" onClick={() => updateQuantity(id, quantity + 1)} className="grid h-full w-10 place-items-center text-autox-gray transition-colors hover:bg-white/5 hover:text-white disabled:cursor-not-allowed disabled:opacity-40">
                                 <Plus size={14} />
                               </button>
                             </div>
@@ -406,7 +465,7 @@ export default function CartPage() {
                           </div>
 
                           <div className="flex justify-end">
-                            <button aria-label={`Remove ${product.name}`} onClick={() => removeItem(item)} className="grid h-9 w-9 place-items-center rounded-xl border border-transparent text-autox-gray transition-colors hover:border-autox-red/30 hover:bg-autox-red/10 hover:text-autox-red">
+                            <button disabled={busyItemIds.size > 0} aria-label={`Remove ${product.name}`} onClick={() => removeItem(item)} className="grid h-9 w-9 place-items-center rounded-xl border border-transparent text-autox-gray transition-colors hover:border-autox-red/30 hover:bg-autox-red/10 hover:text-autox-red disabled:cursor-not-allowed disabled:opacity-40">
                               <Trash2 size={16} />
                             </button>
                           </div>
