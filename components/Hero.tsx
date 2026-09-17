@@ -133,7 +133,7 @@ export function Hero({ slides, autoplay = true, interval = 5000, pauseOnHover = 
             {active.secondaryLabel && active.secondaryHref && <ButtonLink href={active.secondaryHref} variant="outline" size="md" className="min-h-12 justify-center rounded-xl border-white/25 bg-black/50 px-6 backdrop-blur-sm"><Scan size={16} />{active.secondaryLabel}</ButtonLink>}
           </div>
         </div>
-        <div className="relative z-10 mx-auto mt-5 grid w-full max-w-xl grid-cols-3 divide-x divide-white/15 rounded-2xl border border-white/10 bg-black/55 py-3 backdrop-blur-md lg:mx-0 lg:mt-7">
+        <div className="relative z-10 mx-auto mt-5 hidden w-full max-w-xl grid-cols-3 divide-x divide-white/15 rounded-2xl border border-white/10 bg-black/55 py-3 backdrop-blur-md lg:mx-0 lg:mt-7 lg:grid">
           {trustPoints.map(({ icon: Icon, label }) => <div key={label} className="flex min-w-0 flex-col items-center gap-1.5 px-2 text-center sm:flex-row sm:justify-center sm:text-left"><Icon size={16} className="autox-neon-mark shrink-0" /><span className="text-[9px] font-bold leading-tight text-zinc-200 sm:text-[11px]">{label}</span></div>)}
         </div>
       </div>

@@ -11,7 +11,7 @@ export function CategoryCard({ category, settings = {} }: { category: Category; 
   return (
     <Link
       href={`/categories/${category.slug}`}
-      aria-label={`Shop ${category.name}: ${category.productCount} products`}
+      aria-label={`Shop ${category.name}: ${category.productCount} parts`}
       className="autox-neon-frame group relative flex h-[255px] min-w-0 flex-col items-center overflow-hidden rounded-xl border bg-[#111113] px-2 pb-4 pt-4 text-center transition-[border-color,box-shadow] duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-autox-red sm:h-[300px] lg:h-[320px]"
     >
       {image && <img src={image} alt={`${category.name} motorcycle parts`} loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-500 ease-out group-hover:scale-[1.04] motion-reduce:transition-none"/>}
@@ -19,8 +19,8 @@ export function CategoryCard({ category, settings = {} }: { category: Category; 
       <span className="autox-neon-icon relative flex h-10 w-10 shrink-0 items-center justify-center sm:h-11 sm:w-11">
         {iconImage ? <img src={iconImage} alt="" className="h-7 w-7 object-contain"/> : <Icon size={20} strokeWidth={1.9} className="autox-neon-mark"/>}
       </span>
-      <span className="relative mt-3 line-clamp-2 min-h-[2.5em] text-xs font-extrabold leading-tight text-white sm:text-sm">{category.name}</span>
-      <span className="autox-neon-count relative mt-auto"><span className="mr-1 tabular-nums">{category.productCount}</span> Products</span>
+      <span className="relative mt-3 line-clamp-2 min-h-[2.5em] text-xs font-extrabold leading-tight tracking-[1px] text-white sm:text-sm">{category.name}</span>
+      <span className="autox-neon-count relative mt-auto"><span className="mr-1 tabular-nums">{category.productCount}</span> Parts</span>
     </Link>
   );
 }
